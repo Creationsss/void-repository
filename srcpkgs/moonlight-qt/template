@@ -1,0 +1,54 @@
+# Template file for 'moonlight-qt'
+pkgname=moonlight-qt
+version=6.1.0
+revision=1
+_common_commit=8599b6042a4ba27749b0f94134dd614b4328a9bc
+_qmdns_commit=b7a5a9f225d5e14b39f9fd1f905c4f505cf2ee99
+_h264bs_commit=34f3c58afa3c47b6cf0a49308a68cbf89c5e0bff
+_enet_commit=bbf71856bb144729af4ed08af6bc2f5826a96db5
+_gamecontrollerdb_commit=e5a5fa2ac6e645d72c619ea99520a3a4586ee005
+archs="x86_64"
+build_wrksrc="moonlight-qt-${version}"
+build_style=qmake
+configure_args="PREFIX=/usr"
+hostmakedepends="pkg-config qt6-base qt6-tools"
+makedepends="SDL2-devel SDL2_ttf-devel opus-devel openssl-devel
+ ffmpeg6-devel libva-devel libvdpau-devel libdrm-devel MesaLib-devel
+ libxkbcommon-devel wayland-protocols libplacebo-devel
+ qt6-base-private-devel qt6-declarative-devel qt6-svg-devel
+ libcurl-devel alsa-lib-devel pulseaudio-devel"
+depends="qt6-svg qt6-declarative"
+short_desc="GameStream client for PC and Steam Link"
+maintainer="creations <creations@creations.works>"
+license="GPL-3.0-or-later"
+homepage="https://github.com/moonlight-stream/moonlight-qt"
+distfiles="https://github.com/moonlight-stream/moonlight-qt/archive/refs/tags/v${version}.tar.gz
+ https://github.com/moonlight-stream/moonlight-common-c/archive/${_common_commit}.tar.gz
+ https://github.com/cgutman/qmdnsengine/archive/${_qmdns_commit}.tar.gz
+ https://github.com/aizvorski/h264bitstream/archive/${_h264bs_commit}.tar.gz
+ https://github.com/cgutman/enet/archive/${_enet_commit}.tar.gz
+ https://github.com/gabomdq/SDL_GameControllerDB/archive/${_gamecontrollerdb_commit}.tar.gz"
+checksum="da41de33363cdbe9d9b04d4eab26ee6121d5aae11c052faaed9dccf07a8b1270
+ 1d62bdcd81e77b8bf6dc804c7402685e806dbcc999240857bbaf62790b24fdbc
+ 051b4197dbb69b014d0f11ec923180724db5dbee2e966fb314ba7c44313f3bec
+ 04fdcd690de01fa29221f65431f93dc156db146dbaf9e0c27346f3e0cee1a193
+ b55531ba56bfad5bb7bef606d4ea4868cc50e1e38cc4778bdec23edd4ee5c2ab
+ 8a36b5dd4f2b0e577632c4202a77c678543576de99b975866a7c15e8e8fc2b9c"
+
+post_extract() {
+	# submodules are nested: wrapper/submodule (e.g. moonlight-common-c/moonlight-common-c/)
+	rm -rf ${build_wrksrc}/moonlight-common-c/moonlight-common-c
+	mv moonlight-common-c-${_common_commit} ${build_wrksrc}/moonlight-common-c/moonlight-common-c
+
+	rm -rf ${build_wrksrc}/qmdnsengine/qmdnsengine
+	mv qmdnsengine-${_qmdns_commit} ${build_wrksrc}/qmdnsengine/qmdnsengine
+
+	rm -rf ${build_wrksrc}/h264bitstream/h264bitstream
+	mv h264bitstream-${_h264bs_commit} ${build_wrksrc}/h264bitstream/h264bitstream
+
+	rm -rf ${build_wrksrc}/moonlight-common-c/moonlight-common-c/enet
+	mv enet-${_enet_commit} ${build_wrksrc}/moonlight-common-c/moonlight-common-c/enet
+
+	rm -rf ${build_wrksrc}/app/SDL_GameControllerDB
+	mv SDL_GameControllerDB-${_gamecontrollerdb_commit} ${build_wrksrc}/app/SDL_GameControllerDB
+}
