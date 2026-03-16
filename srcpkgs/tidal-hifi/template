@@ -1,15 +1,17 @@
 # Template file for 'tidal-hifi'
 pkgname=tidal-hifi
-version=6.2.0
+version=6.3.0
 revision=1
+_tag="${version}-Mavy"
 archs="x86_64"
 depends="gtk+3 nss libXtst alsa-lib hicolor-icon-theme desktop-file-utils"
 short_desc="Web version of Tidal running in electron with hifi support thanks to widevine"
 maintainer="creations <creations@creations.works>"
 license="MIT"
 homepage="https://github.com/Mastermindzh/tidal-hifi"
-distfiles="https://github.com/Mastermindzh/tidal-hifi/releases/download/${version}/tidal-hifi-${version}.tar.gz"
-checksum=3a037615991b3d427c5829eb728791e3ecf2a7a145e09189c9e524fe9ba749a8
+_vcheck_repo="Mastermindzh/tidal-hifi"
+distfiles="https://github.com/Mastermindzh/tidal-hifi/releases/download/${_tag}/tidal-hifi-${version}.tar.gz"
+checksum=f60894b37ada81962d6d872ae4de9d2f90f519cee90afd11b105ce66a226119e
 nostrip=yes
 allow_unknown_shlibs=yes
 
