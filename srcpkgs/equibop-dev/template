@@ -1,0 +1,43 @@
+# Template file for 'equibop-dev'
+pkgname=equibop-dev
+version=0.0.0.20260319
+revision=1
+_gitcommit=e9741b1f7c738689c1240803063016aec3f71bd3
+_electronver=35
+hostmakedepends="gcc nodejs nodejs-devel python3 pkg-config libglib-devel"
+depends="electron${_electronver} hicolor-icon-theme desktop-file-utils"
+short_desc="Custom Discord App (dev branch)"
+maintainer="creations <creations@creations.works>"
+license="GPL-3.0-or-later"
+homepage="https://github.com/Equicord/Equibop"
+distfiles="https://github.com/Equicord/Equibop/archive/${_gitcommit}.tar.gz"
+checksum=d40f11e93e88976ec58d349aa7a566bca6dd1ac21f547f63cb8b3ef80f9489d6
+wrksrc="Equibop-${_gitcommit}"
+provides="equibop-${version}_${revision}"
+conflicts="equibop>=0"
+nostrip=yes
+
+do_build() {
+	sed -i "s|execSync(\"git rev-parse HEAD\", { encoding: \"utf-8\" }).trim()|\"${_gitcommit}\"|" \
+		scripts/build/build.mts
+
+	export SKIP_BUN_DOWNLOAD=true
+	export npm_config_nodedir=/usr
+	CI=true bun install
+	bun run buildLibVesktop
+	bun run package:dir
+}
+
+do_install() {
+	vmkdir usr/lib/equibop
+	vinstall dist/linux-unpacked/resources/app.asar 644 usr/lib/equibop
+	vinstall dist/linux-unpacked/resources/app-update.yml 644 usr/lib/equibop
+	vcopy dist/linux-unpacked/resources/arrpc usr/lib/equibop
+
+	vbin ${FILESDIR}/equibop.sh equibop
+
+	vinstall ${FILESDIR}/equibop.desktop 644 usr/share/applications
+	vinstall static/icon.png 644 usr/share/pixmaps equibop.png
+	vinstall build/icon.svg 644 usr/share/icons/hicolor/scalable/apps equibop.svg
+	vlicense LICENSE
+}

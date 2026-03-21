@@ -219,7 +219,7 @@
 						if (prefix && latest.indexOf(prefix) === 0) {
 							latest = latest.substring(prefix.length);
 						}
-						latest = latest.replace(/-[A-Za-z].*$/, "");
+						latest = latest.replace(/-[A-Za-z]+$/, "");
 
 						cache[repo] = latest;
 						showResult(el, current, latest);
