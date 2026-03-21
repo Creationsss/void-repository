@@ -9,7 +9,6 @@ short_desc="Web version of Tidal running in electron with hifi support thanks to
 maintainer="creations <creations@creations.works>"
 license="MIT"
 homepage="https://github.com/Mastermindzh/tidal-hifi"
-_vcheck_repo="Mastermindzh/tidal-hifi"
 distfiles="https://github.com/Mastermindzh/tidal-hifi/releases/download/${_tag}/tidal-hifi-${version}.tar.gz"
 checksum=f60894b37ada81962d6d872ae4de9d2f90f519cee90afd11b105ce66a226119e
 nostrip=yes
