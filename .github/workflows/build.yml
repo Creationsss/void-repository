@@ -91,7 +91,7 @@ jobs:
             local pkgname="$1" force="${2:-false}"
             echo "$built" | grep -qx "$pkgname" && return 0
             if [ "$force" != "true" ] && [ -n "$BUILD_ONLY" ]; then
-              echo "$BUILD_ONLY" | tr ' ' '\n' | grep -qx "$pkgname" || { built="$(printf '%s\n%s' "$built" "$pkgname")"; return 0; }
+              echo "$BUILD_ONLY" | tr ' ' '\n' | grep -qx "$pkgname" || return 0
             fi
             rm -f hostdir/binpkgs/${pkgname}-*.xbps hostdir/binpkgs/${pkgname}-*.xbps.sig2
             echo ":: Building $pkgname..."
@@ -101,6 +101,10 @@ jobs:
           for pkg in "$GITHUB_WORKSPACE"/srcpkgs/*/; do
             [ -L "${pkg%/}" ] && continue
             pkgname="$(basename "$pkg")"
+            # skip dependency check for packages not in BUILD_ONLY
+            if [ -n "$BUILD_ONLY" ]; then
+              echo "$BUILD_ONLY" | tr ' ' '\n' | grep -qx "$pkgname" || { build_one "$pkgname"; continue; }
+            fi
             # build local makedepends first (force build even if not in BUILD_ONLY)
             for dep_dir in "$GITHUB_WORKSPACE"/srcpkgs/*/; do
               [ -L "${dep_dir%/}" ] && continue
