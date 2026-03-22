@@ -22,7 +22,9 @@ jobs:
       - name: Install dependencies
         run: |
           xbps-install -Syu -y
-          xbps-install -y git xbps xtools base-devel curl unzip
+          xbps-install -y git xbps xtools base-devel curl unzip void-repo-multilib
+          xbps-install -Sy -y gcc-multilib glibc-devel-32bit vulkan-loader-devel-32bit \
+            MesaLib-devel-32bit libX11-devel-32bit libxcb-devel-32bit wayland-devel-32bit
 
       - name: Install bun
         env:

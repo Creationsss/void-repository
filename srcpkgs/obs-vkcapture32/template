@@ -1,0 +1,41 @@
+# Template file for 'obs-vkcapture32'
+# 32-bit Vulkan/OpenGL capture layer for use with 32-bit games
+pkgname=obs-vkcapture32
+version=1.5.5
+revision=1
+archs="x86_64"
+create_wrksrc=yes
+hostmakedepends="cmake ninja pkg-config gcc-multilib"
+makedepends="Vulkan-Headers vulkan-loader-devel-32bit MesaLib-devel-32bit
+ glibc-devel-32bit libX11-devel-32bit libxcb-devel-32bit wayland-devel-32bit"
+depends="vulkan-loader-32bit obs-vkcapture"
+short_desc="OBS Vulkan/OpenGL game capture - 32-bit layer"
+maintainer="creations <creations@creations.works>"
+license="GPL-2.0-or-later"
+homepage="https://github.com/nowrep/obs-vkcapture"
+distfiles="https://github.com/nowrep/obs-vkcapture/archive/refs/tags/v${version}.tar.gz"
+checksum=02e79385f5afd6fcc0dbbcdb35adb653a111bf3a0d4d4d7edd82297222f80637
+_no_vcheck=yes
+
+do_build() {
+	cd obs-vkcapture-${version}
+	cmake -B build32 \
+		-DBUILD_PLUGIN=OFF \
+		-DCMAKE_C_FLAGS="-m32" \
+		-DCMAKE_CXX_FLAGS="-m32" \
+		-DCMAKE_EXE_LINKER_FLAGS="-m32" \
+		-DCMAKE_SHARED_LINKER_FLAGS="-m32" \
+		-DCMAKE_MODULE_LINKER_FLAGS="-m32" \
+		-DCMAKE_INSTALL_LIBDIR=lib32 \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_DATADIR=share \
+		-GNinja
+	ninja -C build32
+}
+
+do_install() {
+	cd obs-vkcapture-${version}
+	DESTDIR="${DESTDIR}" ninja -C build32 install
+	# Remove Vulkan layer json (provided by obs-vkcapture)
+	rm -f ${DESTDIR}/usr/share/vulkan/implicit_layer.d/obs_vkcapture.json
+}
