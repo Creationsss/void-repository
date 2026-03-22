@@ -144,6 +144,7 @@ jobs:
             rev="$(sed -n 's/^revision=//p' "$pkg/template")"
             desc="$(sed -n 's/^short_desc="\(.*\)"/\1/p' "$pkg/template")"
             dist="$(sed -n '/^distfiles=/{s/^distfiles="//;s/"$//;p;q}' "$pkg/template")"
+            no_vcheck="$(sed -n 's/^_no_vcheck=//p' "$pkg/template")"
 
             api="github"
             api_url=""
@@ -199,9 +200,13 @@ jobs:
               tag_prefix="v"
             fi
 
-            attrs="data-repo='${repo}' data-version='${check_ver}' data-tag-prefix='${tag_prefix}' data-api='${api}'"
-            if [ -n "$api_url" ]; then
-              attrs="${attrs} data-api-url='${api_url}'"
+            if [ "$no_vcheck" = "yes" ]; then
+              attrs=""
+            else
+              attrs="data-repo='${repo}' data-version='${check_ver}' data-tag-prefix='${tag_prefix}' data-api='${api}'"
+              if [ -n "$api_url" ]; then
+                attrs="${attrs} data-api-url='${api_url}'"
+              fi
             fi
 
             pkglist="${pkglist}<span class='pkg' ${attrs}>  ${name} ${ver}_${rev} - ${desc}</span>"

@@ -10,6 +10,7 @@ short_desc="Custom Discord App (dev branch)"
 maintainer="creations <creations@creations.works>"
 license="GPL-3.0-or-later"
 homepage="https://github.com/Equicord/Equibop"
+_no_vcheck=yes
 distfiles="https://github.com/Equicord/Equibop/archive/${_gitcommit}.tar.gz"
 checksum=d40f11e93e88976ec58d349aa7a566bca6dd1ac21f547f63cb8b3ef80f9489d6
 wrksrc="Equibop-${_gitcommit}"
