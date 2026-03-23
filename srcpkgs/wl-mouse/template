@@ -1,6 +1,6 @@
 # Template file for 'wl-mouse'
 pkgname=wl-mouse
-version=0.1.3
+version=0.1.4
 revision=1
 archs="x86_64"
 depends="eudev"
@@ -8,8 +8,8 @@ short_desc="CLI tool for WLmouse gaming mice configuration"
 maintainer="creations <creations@creations.works>"
 license="AGPL-3.0-or-later"
 homepage="https://heliopolis.live/creations/wl-mouse"
-distfiles="https://heliopolis.live/creations/wl-mouse/-/jobs/artifacts/v${version}/raw/wl-mouse-linux-x86_64?job=build-release>wl-mouse-${version}"
-checksum=ed94ba747ff9f50a3b1632d89d3cb54079db85757e1f37895ab2e598dc529d48
+distfiles="https://heliopolis.live/creations/wl-mouse/-/jobs/artifacts/${version}/raw/wl-mouse-linux-x86_64?job=build-release>wl-mouse-${version}"
+checksum=6b747339bd8db1a14fc1de4fd36311d3d9039f7e38609e51606b4f136aa3015d
 nostrip=yes
 skip_extraction="wl-mouse-${version}"
 
