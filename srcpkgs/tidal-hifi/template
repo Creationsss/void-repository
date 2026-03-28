@@ -1,6 +1,6 @@
 # Template file for 'tidal-hifi'
 pkgname=tidal-hifi
-version=6.3.0
+version=6.3.1
 revision=1
 _tag="${version}-Mavy"
 archs="x86_64"
@@ -10,7 +10,7 @@ maintainer="creations <creations@creations.works>"
 license="MIT"
 homepage="https://github.com/Mastermindzh/tidal-hifi"
 distfiles="https://github.com/Mastermindzh/tidal-hifi/releases/download/${_tag}/tidal-hifi-${version}.tar.gz"
-checksum=f60894b37ada81962d6d872ae4de9d2f90f519cee90afd11b105ce66a226119e
+checksum=fe5c985386c6795d07a682084176b4b2ab164868273d426b63f01eb6d5b39df6
 nostrip=yes
 allow_unknown_shlibs=yes
 
