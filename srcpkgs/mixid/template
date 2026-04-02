@@ -1,0 +1,20 @@
+# Template file for 'mixid'
+pkgname=mixid
+version=0.1.6
+revision=1
+archs="x86_64"
+create_wrksrc=yes
+depends="glfw libusb libglvnd eudev"
+short_desc="Unofficial Linux control panel for Audient iD audio interfaces"
+maintainer="creations <creations@creations.works>"
+license="MIT"
+homepage="https://github.com/TheOnlyJoey/MixiD"
+distfiles="https://github.com/TheOnlyJoey/MixiD/releases/download/${version}/MixiD-${version}.tar.xz"
+checksum=c10695ea8fdaae7a6b9ce51a12354ca6b2aa2b78662d6171673e4972a1a975f3
+nostrip=yes
+
+do_install() {
+	vbin MixiD mixid
+	vinstall ${FILESDIR}/mixid.desktop 644 usr/share/applications
+	vinstall ${FILESDIR}/99-audient.rules 644 usr/lib/udev/rules.d
+}
