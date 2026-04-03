@@ -1,9 +1,9 @@
 # Template file for 'obs-ws'
 # Based on void-packages obs template with websocket support enabled
 pkgname=obs-ws
-version=32.1.0
+version=32.1.1
 revision=1
-_ws_commit=68bebc28be57a8ca371404182113e16eeac74cbf
+_ws_commit=1fcb95b15aa88b1b7e9bda3f9c8650e314377169
 archs="x86_64"
 build_wrksrc=obs-studio-${version}
 build_style=cmake
@@ -32,8 +32,8 @@ license="GPL-2.0-or-later"
 homepage="https://obsproject.com"
 distfiles="https://github.com/obsproject/obs-studio/archive/refs/tags/${version}.tar.gz
  https://github.com/obsproject/obs-websocket/archive/${_ws_commit}.tar.gz>obs-websocket-${_ws_commit}.tar.gz"
-checksum="40d1d5cee743929ecb19f400c69f0c796ba59a01b65f0785d1545b970f2d6b2f
- 4f4aa9f42dca9619266ab448d37552387d8c8da49f93c90db2a1ef2f6ec6354a"
+checksum="800a394671770794d8a453d3939b38605971b08e89634160f28c74ca62f62492
+ 87e41f6e7e1bc4bf3067ac72e5fb36d476466b63849ef62d2caa44eba40495a5"
 provides="obs-${version}_${revision}"
 conflicts="obs>=0"
 

@@ -1,7 +1,7 @@
 # Template file for 'bitwarden'
 pkgname=bitwarden
-version=2026.2.1
-revision=2
+version=2026.3.1
+revision=1
 archs="x86_64"
 create_wrksrc=yes
 depends="gtk+3 nss libXtst alsa-lib hicolor-icon-theme desktop-file-utils libayatana-appindicator"
@@ -10,7 +10,7 @@ maintainer="creations <creations@creations.works>"
 license="GPL-3.0-only"
 homepage="https://bitwarden.com"
 distfiles="https://github.com/bitwarden/clients/releases/download/desktop-v${version}/bitwarden_${version}_x64.tar.gz"
-checksum=650478132e5526f8c33997f4ecf3f45d650c4e71326d2afdc112f3ca89902717
+checksum=3558e24b829d90c7bb73ce22962f6fac1a9483b6052c1ed3075663413ec6efab
 nostrip=yes
 
 do_install() {

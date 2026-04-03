@@ -1,6 +1,6 @@
 # Template file for 'grabit'
 pkgname=grabit
-version=1.1.8
+version=1.1.9
 revision=1
 depends="bash curl jq xdg-utils libnotify python3"
 short_desc="Screenshot, screen recording, and file uploader with OCR support"
@@ -8,7 +8,7 @@ maintainer="creations <creations@creations.works>"
 license="BSD-3-Clause"
 homepage="https://heliopolis.live/creations/grabit"
 distfiles="https://heliopolis.live/creations/grabit/-/archive/${version}/grabit-${version}.tar.gz"
-checksum=25f0f9f75d23d1390fee033d08cc1ac52b230ad5557374d3276eb601cc244117
+checksum=0afddf1810a4a54338310b7f96c2b408e577bdde3a092d94096355dd984800de
 wrksrc="grabit-${version}"
 
 do_install() {
