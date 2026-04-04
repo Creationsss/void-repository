@@ -1,0 +1,48 @@
+# Template file for 'r2modman'
+pkgname=r2modman
+version=3.2.15
+revision=1
+archs="x86_64"
+create_wrksrc=yes
+depends="gtk+3 nss libXtst alsa-lib hicolor-icon-theme desktop-file-utils"
+short_desc="Mod manager for Risk of Rain 2, Valheim, and other Thunderstore games"
+maintainer="creations <creations@creations.works>"
+license="MIT"
+homepage="https://r2modman.net"
+distfiles="https://github.com/ebkr/r2modmanPlus/releases/download/v${version}/r2modman-${version}.AppImage"
+checksum=1b220f8e1b227d0c590b983190b0ec47b451a314378a37a54004e7ec48bb8c3c
+nostrip=yes
+allow_unknown_shlibs=yes
+skip_extraction="r2modman-${version}.AppImage"
+
+do_extract() {
+	local _appimage="${XBPS_SRCDISTDIR}/${pkgname}-${version}/r2modman-${version}.AppImage"
+	chmod +x "$_appimage"
+	"$_appimage" --appimage-extract
+	cp -a squashfs-root/. .
+	rm -rf squashfs-root
+}
+
+do_install() {
+	vmkdir usr/lib/r2modman
+	vcopy r2modman usr/lib/r2modman
+	vcopy chrome_crashpad_handler usr/lib/r2modman
+	vcopy chrome-sandbox usr/lib/r2modman
+	vcopy "*.so*" usr/lib/r2modman
+	vcopy "*.pak" usr/lib/r2modman
+	vcopy "*.bin" usr/lib/r2modman
+	vcopy "*.dat" usr/lib/r2modman
+	vcopy "*.json" usr/lib/r2modman
+	vcopy locales usr/lib/r2modman
+	vcopy resources usr/lib/r2modman
+	chmod 755 ${DESTDIR}/usr/lib/r2modman/r2modman
+	chmod 755 ${DESTDIR}/usr/lib/r2modman/chrome_crashpad_handler
+	vbin ${FILESDIR}/r2modman.sh r2modman
+	vinstall ${FILESDIR}/r2modman.desktop 644 usr/share/applications
+	for size in 16x16 24x24 32x32 48x48 64x64 96x96 128x128 192x192 256x256; do
+		vinstall usr/share/icons/hicolor/${size}/apps/r2modman.png 644 \
+			usr/share/icons/hicolor/${size}/apps
+	done
+	vinstall usr/share/icons/hicolor/128x128/apps/r2modman.png 644 usr/share/pixmaps r2modman.png
+	vlicense LICENSE.electron.txt
+}
