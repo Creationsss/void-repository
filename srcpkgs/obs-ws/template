@@ -2,7 +2,7 @@
 # Based on void-packages obs template with websocket support enabled
 pkgname=obs-ws
 version=32.1.1
-revision=1
+revision=2
 _ws_commit=1fcb95b15aa88b1b7e9bda3f9c8650e314377169
 archs="x86_64"
 build_wrksrc=obs-studio-${version}

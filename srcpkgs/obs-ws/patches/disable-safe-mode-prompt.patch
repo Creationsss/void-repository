@@ -1,0 +1,13 @@
+Disable the unclean shutdown / safe mode prompt dialog.
+Upstream removed --disable-shutdown-check in 32.0.0, this patch skips
+the prompt entirely. The sentinel file is still cleaned up on shutdown.
+--- a/frontend/OBSApp.cpp
++++ b/frontend/OBSApp.cpp
+@@ -1103,6 +1103,7 @@ void OBSApp::MakeUserDirs()
+
+ void OBSApp::checkForUncleanShutdown()
+ {
++	return;
+ 	bool hasUncleanShutdown = crashHandler_->hasUncleanShutdown();
+ 	bool hasNewCrashLog = crashHandler_->hasNewCrashLog();
+
