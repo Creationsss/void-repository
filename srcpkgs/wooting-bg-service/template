@@ -1,0 +1,45 @@
+# Template file for 'wooting-bg-service'
+pkgname=wooting-bg-service
+version=0.4.7
+revision=1
+archs="x86_64"
+create_wrksrc=yes
+short_desc="Wooting Background Service for keyboard features"
+maintainer="creations <creations@creations.works>"
+license="custom:Proprietary"
+homepage="https://wooting.io/wootility"
+distfiles="https://api.wooting.io/public/bg-service/download-installer?target=linux>Wooting.Background.Service_${version}_amd64.AppImage"
+checksum=e93a19712a37b75d8ca2315c088a0066fa7dbf84cccddb0265d191c228ef9e62
+nostrip=yes
+allow_unknown_shlibs=yes
+skip_extraction="Wooting.Background.Service_${version}_amd64.AppImage"
+_no_vcheck=yes
+
+do_extract() {
+	local _appimage="${XBPS_SRCDISTDIR}/${pkgname}-${version}/Wooting.Background.Service_${version}_amd64.AppImage"
+	chmod +x "$_appimage"
+	"$_appimage" --appimage-extract
+	cp -a squashfs-root/. .
+	rm -rf squashfs-root
+}
+
+do_install() {
+	vmkdir usr/lib/wooting-bg-service
+	vcopy AppRun usr/lib/wooting-bg-service
+	vcopy AppRun.wrapped usr/lib/wooting-bg-service
+	vcopy apprun-hooks usr/lib/wooting-bg-service
+	vcopy usr usr/lib/wooting-bg-service
+	chmod 755 ${DESTDIR}/usr/lib/wooting-bg-service/AppRun
+	chmod 755 ${DESTDIR}/usr/lib/wooting-bg-service/AppRun.wrapped
+	chmod 755 ${DESTDIR}/usr/lib/wooting-bg-service/usr/bin/wooting-bg-service
+	find ${DESTDIR}/usr/lib/wooting-bg-service -type f -perm -0002 -exec chmod o-w {} \;
+	vbin ${FILESDIR}/wooting-bg-service.sh wooting-bg-service
+	vinstall ${FILESDIR}/wooting-bg-service.desktop 644 usr/share/applications
+	for size in 32x32 64x64 128x128 256x256; do
+		if [ -f usr/share/icons/hicolor/${size}/apps/wooting-bg-service.png ]; then
+			vinstall usr/share/icons/hicolor/${size}/apps/wooting-bg-service.png 644 \
+				usr/share/icons/hicolor/${size}/apps
+		fi
+	done
+	vinstall wooting-bg-service.png 644 usr/share/pixmaps
+}

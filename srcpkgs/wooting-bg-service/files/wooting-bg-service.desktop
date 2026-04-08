@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Wooting Background Service
+Exec=wooting-bg-service
+Icon=wooting-bg-service
+Terminal=false
+Type=Application
+Comment=Wooting Background Service for keyboard features
+Categories=Utility;Settings;
+X-GNOME-Autostart-enabled=true
