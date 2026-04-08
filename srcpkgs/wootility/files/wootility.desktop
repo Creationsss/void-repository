@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Wootility
+Exec=wootility %U
+Terminal=false
+Type=Application
+Icon=wootility
+Comment=Configuration utility for Wooting keyboards
+Categories=Utility;Settings;HardwareSettings;
+Keywords=wooting;keyboard;

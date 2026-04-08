@@ -1,0 +1,48 @@
+# Template file for 'wootility'
+pkgname=wootility
+version=5.2.5
+revision=1
+archs="x86_64"
+create_wrksrc=yes
+depends="gtk+3 nss libXtst alsa-lib hicolor-icon-theme desktop-file-utils"
+short_desc="Configuration utility for Wooting keyboards"
+maintainer="creations <creations@creations.works>"
+license="custom:Proprietary"
+homepage="https://wooting.io/wootility"
+distfiles="https://api.wooting.io/public/wootility/download?os=linux&version=${version}>Wootility-${version}.AppImage"
+checksum=6c3870948fb38b5df174c5ea4f9cedcd1ed134e2e04c1c4db631a41057b366cc
+nostrip=yes
+allow_unknown_shlibs=yes
+skip_extraction="Wootility-${version}.AppImage"
+
+do_extract() {
+	local _appimage="${XBPS_SRCDISTDIR}/${pkgname}-${version}/Wootility-${version}.AppImage"
+	chmod +x "$_appimage"
+	"$_appimage" --appimage-extract
+	cp -a squashfs-root/. .
+	rm -rf squashfs-root
+}
+
+do_install() {
+	vmkdir usr/lib/wootility
+	vcopy wootility usr/lib/wootility
+	vcopy chrome_crashpad_handler usr/lib/wootility
+	vcopy "*.so*" usr/lib/wootility
+	vcopy "*.pak" usr/lib/wootility
+	vcopy "*.bin" usr/lib/wootility
+	vcopy "*.dat" usr/lib/wootility
+	vcopy "*.json" usr/lib/wootility
+	vcopy locales usr/lib/wootility
+	vcopy resources usr/lib/wootility
+	chmod 755 ${DESTDIR}/usr/lib/wootility/wootility
+	chmod 755 ${DESTDIR}/usr/lib/wootility/chrome_crashpad_handler
+	vbin ${FILESDIR}/wootility.sh wootility
+	vinstall ${FILESDIR}/wootility.desktop 644 usr/share/applications
+	for size in 16x16 32x32 48x48 64x64 128x128 256x256 512x512 1024x1024; do
+		vinstall usr/share/icons/hicolor/${size}/apps/wootility.png 644 \
+			usr/share/icons/hicolor/${size}/apps
+	done
+	vinstall usr/share/icons/hicolor/128x128/apps/wootility.png 644 usr/share/pixmaps wootility.png
+	vinstall ${FILESDIR}/70-wooting.rules 644 usr/lib/udev/rules.d
+	vlicense LICENSE.electron.txt
+}
