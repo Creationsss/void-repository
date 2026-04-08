@@ -1,7 +1,7 @@
 # Template file for 'wooting-bg-service'
 pkgname=wooting-bg-service
 version=0.4.7
-revision=1
+revision=2
 archs="x86_64"
 create_wrksrc=yes
 short_desc="Wooting Background Service for keyboard features"
@@ -28,6 +28,7 @@ do_install() {
 	vcopy AppRun usr/lib/wooting-bg-service
 	vcopy AppRun.wrapped usr/lib/wooting-bg-service
 	vcopy apprun-hooks usr/lib/wooting-bg-service
+	vcopy "Wooting Background Service.desktop" usr/lib/wooting-bg-service
 	vcopy usr usr/lib/wooting-bg-service
 	chmod 755 ${DESTDIR}/usr/lib/wooting-bg-service/AppRun
 	chmod 755 ${DESTDIR}/usr/lib/wooting-bg-service/AppRun.wrapped
