@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Feishin
+Comment=Full-featured music player for Navidrome/Jellyfin/Subsonic
+Exec=feishin %U
+Icon=feishin
+Terminal=false
+Type=Application
+Categories=Audio;AudioVideo;Music;Player;
+StartupWMClass=Feishin
+MimeType=x-scheme-handler/feishin;

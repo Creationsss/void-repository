@@ -1,0 +1,43 @@
+# Template file for 'feishin'
+pkgname=feishin
+version=1.11.0
+revision=1
+archs="x86_64"
+create_wrksrc=yes
+depends="gtk+3 nss libXtst alsa-lib hicolor-icon-theme desktop-file-utils mpv"
+short_desc="Full-featured music player for Navidrome/Jellyfin/Subsonic"
+maintainer="creations <creations@creations.works>"
+license="GPL-3.0-only"
+homepage="https://github.com/jeffvli/feishin"
+distfiles="https://github.com/jeffvli/feishin/releases/download/v${version}/Feishin-linux-x64.tar.xz"
+checksum=22b60b60cea34b75808d337c19d9c80d5b135afbc1a1b8462a6f95bfbf754bc6
+nostrip=yes
+allow_unknown_shlibs=yes
+
+do_extract() {
+	bsdtar xJf ${XBPS_SRCDISTDIR}/${pkgname}-${version}/Feishin-linux-x64.tar.xz --strip-components=1
+}
+
+do_install() {
+	vmkdir usr/lib/feishin
+	vcopy feishin usr/lib/feishin
+	vcopy chrome_crashpad_handler usr/lib/feishin
+	vcopy chrome-sandbox usr/lib/feishin
+	vcopy "*.so*" usr/lib/feishin
+	vcopy "*.pak" usr/lib/feishin
+	vcopy "*.bin" usr/lib/feishin
+	vcopy "*.dat" usr/lib/feishin
+	vcopy "*.json" usr/lib/feishin
+	vcopy locales usr/lib/feishin
+	vcopy resources usr/lib/feishin
+	chmod 755 ${DESTDIR}/usr/lib/feishin/feishin
+	chmod 755 ${DESTDIR}/usr/lib/feishin/chrome_crashpad_handler
+	vbin ${FILESDIR}/feishin.sh feishin
+	vinstall ${FILESDIR}/feishin.desktop 644 usr/share/applications
+	for size in 16x16 24x24 32x32 48x48 64x64 72x72 96x96 128x128 256x256 512x512 1024x1024; do
+		vinstall resources/assets/icons/${size}.png 644 \
+			usr/share/icons/hicolor/${size}/apps feishin.png
+	done
+	vinstall resources/assets/icons/128x128.png 644 usr/share/pixmaps feishin.png
+	vlicense LICENSE.electron.txt
+}
