@@ -1,7 +1,7 @@
 # Template file for 'wooting-bg-service'
 pkgname=wooting-bg-service
-version=0.4.7
-revision=2
+version=0.4.8
+revision=1
 archs="x86_64"
 create_wrksrc=yes
 short_desc="Wooting Background Service for keyboard features"
@@ -9,7 +9,7 @@ maintainer="creations <creations@creations.works>"
 license="custom:Proprietary"
 homepage="https://wooting.io/wootility"
 distfiles="https://api.wooting.io/public/bg-service/download-installer?target=linux>Wooting.Background.Service_${version}_amd64.AppImage"
-checksum=e93a19712a37b75d8ca2315c088a0066fa7dbf84cccddb0265d191c228ef9e62
+checksum=b327b3871dcc139c05c4b6dadd6ebe51dacf1740df6f109dd6efbac970abeb32
 nostrip=yes
 allow_unknown_shlibs=yes
 skip_extraction="Wooting.Background.Service_${version}_amd64.AppImage"
