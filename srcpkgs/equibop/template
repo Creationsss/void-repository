@@ -1,7 +1,7 @@
 # Template file for 'equibop'
 pkgname=equibop
-version=3.1.9
-revision=2
+version=3.2.0
+revision=1
 _electronver=35
 hostmakedepends="gcc nodejs nodejs-devel python3 pkg-config libglib-devel"
 depends="electron${_electronver} hicolor-icon-theme desktop-file-utils"
@@ -10,8 +10,8 @@ maintainer="creations <creations@creations.works>"
 license="GPL-3.0-or-later"
 homepage="https://github.com/Equicord/Equibop"
 distfiles="https://github.com/Equicord/Equibop/archive/refs/tags/v${version}.tar.gz"
-checksum=683181aa9ec99cc5eaa8c63dd233c181c9580dbcf3d6406dadb21fd1720daad2
-_githash=44000f82b50fd3497002aa965b217e8d2489dd53
+checksum=7592a8fdb9470e5b9b7366f9a1803c6ee605e6f25861e1836041094077e94a9b
+_githash=5d72ea5a2b143c70faa259e20c094da40a168ba7
 wrksrc="Equibop-${version}"
 nostrip=yes
 

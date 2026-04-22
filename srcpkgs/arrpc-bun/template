@@ -1,6 +1,6 @@
 # Template file for 'arrpc-bun'
 pkgname=arrpc-bun
-version=1.3.5
+version=1.3.6
 revision=1
 archs="x86_64"
 short_desc="TypeScript/Bun port of arRPC - Open Discord RPC server"
@@ -8,7 +8,7 @@ maintainer="creations <creations@creations.works>"
 license="MIT"
 homepage="https://github.com/Creationsss/arrpc-bun"
 distfiles="https://github.com/Creationsss/arrpc-bun/archive/refs/tags/v${version}.tar.gz"
-checksum=131040d1aa6da09a733d47a1577771dba7394e581b5a815efa0e53e73dcd9923
+checksum=7f4d34404dd4334c7a0c58041f41d65eb2b74cf9da6330be1dd687bc5c112800
 nostrip=yes
 
 do_build() {

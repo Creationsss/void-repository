@@ -105,12 +105,14 @@ jobs:
             if [ -n "$BUILD_ONLY" ]; then
               echo "$BUILD_ONLY" | tr ' ' '\n' | grep -qx "$pkgname" || { build_one "$pkgname"; continue; }
             fi
+            # extract only the dep-related lines to avoid false matches from provides/conflicts/etc
+            dep_lines="$(sed -n '/^\(host\)\?make\?depends=/,/"$/p' "$GITHUB_WORKSPACE/srcpkgs/$pkgname/template" 2>/dev/null)"
             # build local makedepends first (force build even if not in BUILD_ONLY)
             for dep_dir in "$GITHUB_WORKSPACE"/srcpkgs/*/; do
               [ -L "${dep_dir%/}" ] && continue
               dep="$(basename "$dep_dir")"
               [ "$dep" = "$pkgname" ] && continue
-              if grep -qw "$dep" "$GITHUB_WORKSPACE/srcpkgs/$pkgname/template" 2>/dev/null; then
+              if echo "$dep_lines" | grep -qw "$dep"; then
                 build_one "$dep" true
               fi
             done
