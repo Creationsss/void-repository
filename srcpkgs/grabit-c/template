@@ -1,0 +1,27 @@
+# Template file for 'grabit-c'
+pkgname=grabit-c
+version=0.0.0.20260429
+revision=1
+_tag=pre-0.1.0
+hostmakedepends="pkg-config wayland-devel"
+makedepends="json-c-devel libcurl-devel file-devel wayland-devel
+ wayland-protocols cairo-devel libxkbcommon-devel basu-devel"
+depends="ffmpeg tesseract tesseract-ocr-eng"
+short_desc="Screenshot, screen recording, OCR, and uploader for wlroots Wayland"
+maintainer="creations <creations@creations.works>"
+license="BSD-3-Clause"
+homepage="https://heliopolis.live/creations/grabit-c"
+distfiles="https://heliopolis.live/creations/grabit-c/-/archive/${_tag}/grabit-c-${_tag}.tar.gz"
+checksum=589343a5f91fda3f917649266137c89267c4fd7a7bacdd3d4f079bee1fd29f80
+wrksrc="grabit-c-${_tag}"
+provides="grabit-c-${version}_${revision}"
+conflicts="grabit>=0"
+_no_vcheck=yes
+
+do_build() {
+	make CC="$CC" PREFIX=/usr ${makejobs}
+}
+
+do_install() {
+	make CC="$CC" PREFIX=/usr DESTDIR="${DESTDIR}" install
+}
