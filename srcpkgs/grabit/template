@@ -1,7 +1,7 @@
 # Template file for 'grabit'
 pkgname=grabit
 version=1.3.0
-revision=1
+revision=2
 depends="bash curl jq xdg-utils libnotify python3"
 short_desc="Screenshot, screen recording, and file uploader with OCR support"
 maintainer="creations <creations@creations.works>"

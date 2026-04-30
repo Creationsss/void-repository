@@ -1,7 +1,7 @@
 # Template file for 'grabit-c'
 pkgname=grabit-c
 version=0.1.0
-revision=1
+revision=2
 hostmakedepends="pkg-config wayland-devel"
 makedepends="json-c-devel libcurl-devel file-devel wayland-devel
  wayland-protocols cairo-devel libxkbcommon-devel basu-devel"
