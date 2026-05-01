@@ -1,8 +1,8 @@
 # Template file for 'equibop-dev'
 pkgname=equibop-dev
-version=0.0.0.20260417
+version=0.0.0.20260425
 revision=1
-_gitcommit=85ff3b5b0a2d37421ec0eb7de956e05e11dea233
+_gitcommit=ba1f76f5e3600d0657978dad9676413f0d8f6309
 _electronver=35
 hostmakedepends="gcc nodejs nodejs-devel python3 pkg-config libglib-devel"
 depends="electron${_electronver} hicolor-icon-theme desktop-file-utils"
@@ -12,7 +12,7 @@ license="GPL-3.0-or-later"
 homepage="https://github.com/Equicord/Equibop"
 _no_vcheck=yes
 distfiles="https://github.com/Equicord/Equibop/archive/${_gitcommit}.tar.gz"
-checksum=f126337e68c4ed7f023fbbdf55a533d47bf92d57a6043749947298e5040ea1d4
+checksum=ea09edf95c6bb2d4ff24ea1ef0980a65359a457d368c055fbc78ec4d186d39ed
 wrksrc="Equibop-${_gitcommit}"
 provides="equibop-${version}_${revision}"
 conflicts="equibop>=0"
