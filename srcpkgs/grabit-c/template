@@ -1,7 +1,7 @@
 # Template file for 'grabit-c'
 pkgname=grabit-c
-version=0.1.0
-revision=2
+version=0.2.0
+revision=1
 hostmakedepends="pkg-config wayland-devel"
 makedepends="json-c-devel libcurl-devel file-devel wayland-devel
  wayland-protocols cairo-devel libxkbcommon-devel basu-devel"
@@ -11,7 +11,7 @@ maintainer="creations <creations@creations.works>"
 license="BSD-3-Clause"
 homepage="https://heliopolis.live/creations/grabit-c"
 distfiles="https://heliopolis.live/creations/grabit-c/-/archive/${version}/grabit-c-${version}.tar.gz"
-checksum=f315ab70e64e1aaf9d4021120991b2538b3841a716073a5749313911f4093c6d
+checksum=b06af179115d4fe49e8deb6c0a96974bf8049e00da06530238e797e302f42117
 provides="grabit-c-${version}_${revision}"
 conflicts="grabit>=0"
 
