@@ -83,6 +83,22 @@ jobs:
       - name: Clean stale repodata
         run: rm -f /void-packages/hostdir/binpkgs/*-repodata /void-packages/hostdir/binpkgs/*.plist
 
+      - name: Remove cached packages no longer in srcpkgs
+        run: |
+          cd /void-packages/hostdir/binpkgs
+          for xbps in *.xbps; do
+            [ -f "$xbps" ] || continue
+            pkgver="${xbps%.x86_64.xbps}"
+            pkgname="$(xbps-uhelper getpkgname "$pkgver" 2>/dev/null)" || continue
+            # strip subpackage suffixes (-devel, -dbg)
+            base="${pkgname%-devel}"
+            base="${base%-dbg}"
+            if [ ! -d "$GITHUB_WORKSPACE/srcpkgs/$pkgname" ] && [ ! -d "$GITHUB_WORKSPACE/srcpkgs/$base" ]; then
+              echo ":: Removing stale: $xbps"
+              rm -f "$xbps" "${xbps}.sig2"
+            fi
+          done
+
       - name: Build packages
         run: |
           cd /void-packages
@@ -93,7 +109,11 @@ jobs:
             if [ "$force" != "true" ] && [ -n "$BUILD_ONLY" ]; then
               echo "$BUILD_ONLY" | tr ' ' '\n' | grep -qx "$pkgname" || return 0
             fi
-            rm -f hostdir/binpkgs/${pkgname}-[0-9]*.xbps hostdir/binpkgs/${pkgname}-[0-9]*.xbps.sig2
+            # remove old versions of pkg + common subpackages (-devel, -dbg)
+            for suffix in "" "-devel" "-dbg"; do
+              rm -f hostdir/binpkgs/${pkgname}${suffix}-[0-9]*.xbps \
+                    hostdir/binpkgs/${pkgname}${suffix}-[0-9]*.xbps.sig2
+            done
             echo ":: Building $pkgname..."
             ./xbps-src -j"$(nproc)" pkg "$pkgname"
             built="$(printf '%s\n%s' "$built" "$pkgname")"

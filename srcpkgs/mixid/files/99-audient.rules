@@ -1,2 +1,0 @@
-# Audient iD series USB audio interfaces - allow non-root access
-SUBSYSTEM=="usb", ATTR{idVendor}=="2708", MODE="0666"
