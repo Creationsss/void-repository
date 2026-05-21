@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Orbolay
+Comment=Quick, small, native Discord overlay alternative
+Exec=orbolay
+Terminal=false
+Type=Application
+Categories=Network;InstantMessaging;Chat;
+Keywords=discord;overlay;voice;

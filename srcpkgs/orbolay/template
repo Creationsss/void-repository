@@ -1,0 +1,22 @@
+# Template file for 'orbolay'
+pkgname=orbolay
+version=2.1.0
+revision=1
+archs="x86_64"
+depends="libX11 libXtst libstdc++ fontconfig freetype libglvnd libxcb gtk+3"
+short_desc="Quick, small, native Discord overlay alternative"
+maintainer="creations <creations@creations.works>"
+license="GPL-3.0-or-later"
+homepage="https://github.com/SpikeHD/Orbolay"
+distfiles="https://github.com/SpikeHD/Orbolay/releases/download/v${version}/orbolay-x86_64-unknown-linux-gnu>orbolay-${version}"
+checksum=1e594911c05f94f59c62133f633aac57ac316dde6a2de7b5f7d4a26bd1ccef42
+nostrip=yes
+allow_unknown_shlibs=yes
+skip_extraction="orbolay-${version}"
+
+do_install() {
+	install -Dm755 ${XBPS_SRCDISTDIR}/${pkgname}-${version}/orbolay-${version} \
+		${DESTDIR}/usr/lib/orbolay/orbolay
+	vbin ${FILESDIR}/orbolay.sh orbolay
+	vinstall ${FILESDIR}/orbolay.desktop 644 usr/share/applications
+}
