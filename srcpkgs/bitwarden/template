@@ -25,6 +25,8 @@ do_install() {
 	vcopy "*.json" usr/lib/bitwarden
 	vcopy locales usr/lib/bitwarden
 	vcopy resources usr/lib/bitwarden
+	# remove musl-linked utf-8-validate variant (we're on glibc)
+	rm -f ${DESTDIR}/usr/lib/bitwarden/resources/app.asar.unpacked/node_modules/utf-8-validate/prebuilds/linux-x64/utf-8-validate.musl.node
 	chmod 755 ${DESTDIR}/usr/lib/bitwarden/bitwarden-app
 	chmod 755 ${DESTDIR}/usr/lib/bitwarden/desktop_proxy
 	chmod 755 ${DESTDIR}/usr/lib/bitwarden/chrome_crashpad_handler
