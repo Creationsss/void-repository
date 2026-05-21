@@ -1,0 +1,12 @@
+Skip meson python module check - modules are installed as wheels at runtime
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -4,7 +4,7 @@ gnome = import('gnome')
+ python = import('python')
+ 
+ # Module objects
+-py_installation = python.find_installation('python3', modules: ['tidalapi', 'pypresence', 'gi.repository'])
++py_installation = python.find_installation('python3')
+ if not py_installation.found()
+     error('No valid python3 binary found')
+ endif
