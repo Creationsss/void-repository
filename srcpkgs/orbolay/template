@@ -1,7 +1,7 @@
 # Template file for 'orbolay'
 pkgname=orbolay
 version=2.1.0
-revision=1
+revision=2
 archs="x86_64"
 depends="libX11 libXtst libstdc++ fontconfig freetype libglvnd libxcb gtk+3"
 short_desc="Quick, small, native Discord overlay alternative"
@@ -16,7 +16,6 @@ skip_extraction="orbolay-${version}"
 
 do_install() {
 	install -Dm755 ${XBPS_SRCDISTDIR}/${pkgname}-${version}/orbolay-${version} \
-		${DESTDIR}/usr/lib/orbolay/orbolay
-	vbin ${FILESDIR}/orbolay.sh orbolay
+		${DESTDIR}/usr/bin/orbolay
 	vinstall ${FILESDIR}/orbolay.desktop 644 usr/share/applications
 }
