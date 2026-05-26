@@ -1,6 +1,6 @@
 # Template file for 'feishin'
 pkgname=feishin
-version=1.11.0
+version=1.12.0
 revision=1
 archs="x86_64"
 create_wrksrc=yes
@@ -10,7 +10,7 @@ maintainer="creations <creations@creations.works>"
 license="GPL-3.0-only"
 homepage="https://github.com/jeffvli/feishin"
 distfiles="https://github.com/jeffvli/feishin/releases/download/v${version}/Feishin-linux-x64.tar.xz"
-checksum=22b60b60cea34b75808d337c19d9c80d5b135afbc1a1b8462a6f95bfbf754bc6
+checksum=d8fcd428e14e227dd101c221ffc6323cb63e889fa08c7c5a518423bdcb7e8489
 nostrip=yes
 allow_unknown_shlibs=yes
 
