@@ -1,6 +1,6 @@
 # Template file for 'orbolay'
 pkgname=orbolay
-version=3.0.0
+version=3.1.0
 revision=1
 archs="x86_64"
 depends="libX11 libXtst libstdc++ fontconfig freetype libglvnd libxcb gtk+3"
@@ -9,7 +9,7 @@ maintainer="creations <creations@creations.works>"
 license="GPL-3.0-or-later"
 homepage="https://github.com/SpikeHD/Orbolay"
 distfiles="https://github.com/SpikeHD/Orbolay/releases/download/v${version}/orbolay-x86_64-unknown-linux-gnu>orbolay-${version}"
-checksum=911c7d421ebe250a7e126ae3d5e215a07648dc0e52bcf105fddbf91e6ddc30c5
+checksum=a9a6d2684ea1af71168a9025e567668b8df65281a28f99df49f78e3d0875c0bc
 nostrip=yes
 allow_unknown_shlibs=yes
 skip_extraction="orbolay-${version}"
