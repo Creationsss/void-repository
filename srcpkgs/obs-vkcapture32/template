@@ -1,7 +1,7 @@
 # Template file for 'obs-vkcapture32'
 # 32-bit Vulkan/OpenGL capture layer for use with 32-bit games
 pkgname=obs-vkcapture32
-version=1.5.5
+version=1.5.6
 revision=1
 archs="x86_64"
 create_wrksrc=yes
@@ -14,7 +14,7 @@ maintainer="creations <creations@creations.works>"
 license="GPL-2.0-or-later"
 homepage="https://github.com/nowrep/obs-vkcapture"
 distfiles="https://github.com/nowrep/obs-vkcapture/archive/refs/tags/v${version}.tar.gz"
-checksum=02e79385f5afd6fcc0dbbcdb35adb653a111bf3a0d4d4d7edd82297222f80637
+checksum=4f0eecd574cf4765bf8a4c5e09b7c764d1c4a9128e6c6fea99e2c6474c494fe0
 _no_vcheck=yes
 
 do_build() {
