@@ -1,0 +1,5 @@
+#!/bin/sh
+exec 2>&1
+cd /opt/JDownloader || exit 1
+exec chpst -u jdownloader:jdownloader \
+	java -Djava.awt.headless=true -jar JDownloader.jar -norestart

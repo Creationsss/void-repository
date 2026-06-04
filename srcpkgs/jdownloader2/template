@@ -1,0 +1,46 @@
+# Template file for 'jdownloader2'
+pkgname=jdownloader2
+version=2.0
+revision=1
+depends="virtual?java-runtime hicolor-icon-theme libarchive libXi libXtst
+ desktop-file-utils shared-mime-info"
+short_desc="Java-based download manager for one-click hosting sites"
+maintainer="creations <creations@creations.works>"
+license="GPL-3.0-or-later, custom:JDownloader-EULA"
+homepage="https://jdownloader.org"
+system_accounts="jdownloader"
+jdownloader_homedir="/opt/JDownloader"
+make_dirs="/opt/JDownloader 2775 jdownloader jdownloader"
+
+do_install() {
+	# Wrapper scripts
+	vmkdir opt/JDownloaderScripts
+	for s in JDownloader JDownloaderHeadless \
+		JDownloaderHeadlessCleanLogin functions.sh; do
+		install -Dm755 ${FILESDIR}/${s} \
+			${DESTDIR}/opt/JDownloaderScripts/${s}
+	done
+
+	# Desktop + MIME
+	vinstall ${FILESDIR}/jdownloader.desktop 644 usr/share/applications
+	vinstall ${FILESDIR}/jd-containers.desktop 644 usr/share/applications
+	vinstall ${FILESDIR}/jdownloader.xml 644 usr/share/mime/packages
+
+	# Icons
+	for size in 16 22 24 32 48 256; do
+		vinstall ${FILESDIR}/jdownloader${size}.png 644 \
+			usr/share/icons/hicolor/${size}x${size}/apps jdownloader.png
+		vinstall ${FILESDIR}/jd-container${size}.png 644 \
+			usr/share/icons/hicolor/${size}x${size}/mimetypes jd-container.png
+	done
+
+	# /usr/bin symlinks
+	vmkdir usr/bin
+	for cmd in JDownloader JDownloaderHeadless JDownloaderHeadlessCleanLogin; do
+		ln -sf /opt/JDownloaderScripts/${cmd} ${DESTDIR}/usr/bin/${cmd}
+	done
+	ln -sf /opt/JDownloaderScripts/JDownloader ${DESTDIR}/usr/bin/jdownloader
+
+	# runit service (headless daemon mode)
+	vsv jdownloader
+}
