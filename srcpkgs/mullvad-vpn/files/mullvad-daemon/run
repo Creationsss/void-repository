@@ -1,0 +1,4 @@
+#!/bin/sh
+exec 2>&1
+export MULLVAD_RESOURCE_DIR="/opt/Mullvad VPN/resources/"
+exec mullvad-daemon -vv --disable-stdout-timestamps

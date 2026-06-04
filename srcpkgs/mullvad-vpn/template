@@ -1,0 +1,61 @@
+# Template file for 'mullvad-vpn'
+pkgname=mullvad-vpn
+version=2026.2
+revision=1
+archs="x86_64"
+create_wrksrc=yes
+depends="gtk+3 nss libnotify alsa-lib dbus libnftnl iputils
+ hicolor-icon-theme desktop-file-utils"
+short_desc="VPN client for secure and anonymous internet access"
+maintainer="creations <creations@creations.works>"
+license="GPL-3.0-or-later"
+homepage="https://mullvad.net"
+distfiles="https://github.com/mullvad/mullvadvpn-app/releases/download/${version}/MullvadVPN-${version}_amd64.deb"
+checksum=7b027f5f1ab054b177fccb2237e019fa342874cafe2663eda5b71d5dee8734fa
+nostrip=yes
+allow_unknown_shlibs=yes
+skip_extraction="MullvadVPN-${version}_amd64.deb"
+
+do_extract() {
+	ar x ${XBPS_SRCDISTDIR}/${pkgname}-${version}/MullvadVPN-${version}_amd64.deb
+	bsdtar xf data.tar.xz
+}
+
+do_install() {
+	# Daemon and CLI binaries
+	vbin usr/bin/mullvad
+	vbin usr/bin/mullvad-daemon
+	vbin usr/bin/mullvad-exclude
+
+	# GUI bundle (kept in /opt — the launcher script uses relative paths)
+	vmkdir "opt/Mullvad VPN"
+	vcopy "opt/Mullvad VPN/*" "opt/Mullvad VPN"
+	chmod 4755 "${DESTDIR}/opt/Mullvad VPN/chrome-sandbox"
+
+	# mullvad-problem-report binary lives in resources/; expose it in /usr/bin
+	ln -sf "/opt/Mullvad VPN/resources/mullvad-problem-report" \
+		${DESTDIR}/usr/bin/mullvad-problem-report
+
+	# Terminal launcher
+	vbin ${FILESDIR}/mullvad-vpn.sh mullvad-vpn
+
+	# Desktop file and icons
+	vinstall usr/share/applications/mullvad-vpn.desktop 644 \
+		usr/share/applications
+	for size in 16x16 32x32 48x48 64x64 128x128 256x256 512x512 1024x1024; do
+		vinstall usr/share/icons/hicolor/${size}/apps/mullvad-vpn.png 644 \
+			usr/share/icons/hicolor/${size}/apps
+	done
+
+	# Shell completions
+	vinstall usr/share/bash-completion/completions/mullvad 644 \
+		usr/share/bash-completion/completions
+	vinstall usr/share/fish/vendor_completions.d/mullvad.fish 644 \
+		usr/share/fish/vendor_completions.d
+
+	# runit service
+	vsv mullvad-daemon
+
+	# Setuid on split-tunneling helper
+	chmod 4755 ${DESTDIR}/usr/bin/mullvad-exclude
+}
