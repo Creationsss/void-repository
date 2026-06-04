@@ -5,9 +5,15 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>Void Repository</title>
 		<style>
-			* { margin: 0; padding: 0; box-sizing: border-box; }
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
 			body {
-				font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+				font-family:
+					-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica,
+					Arial, sans-serif;
 				line-height: 1.6;
 				color: #24292f;
 				background: #fff;
@@ -37,10 +43,14 @@
 				color: #656d76;
 				margin-bottom: 0.4rem;
 			}
-			.section { margin-bottom: 1.5rem; }
+			.section {
+				margin-bottom: 1.5rem;
+			}
 			.cmd {
 				display: block;
-				font-family: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, monospace;
+				font-family:
+					ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas,
+					monospace;
 				font-size: 0.85rem;
 				background: #f6f8fa;
 				border: 1px solid #d0d7de;
@@ -55,12 +65,22 @@
 				color: #656d76;
 				margin-bottom: 0.15rem;
 			}
-			a { color: #0969da; text-decoration: none; }
-			a:hover { text-decoration: underline; }
-			.source { font-size: 0.85rem; color: #656d76; }
+			a {
+				color: #0969da;
+				text-decoration: none;
+			}
+			a:hover {
+				text-decoration: underline;
+			}
+			.source {
+				font-size: 0.85rem;
+				color: #656d76;
+			}
 			#search {
 				display: block;
-				font-family: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, monospace;
+				font-family:
+					ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas,
+					monospace;
 				font-size: 0.85rem;
 				padding: 0.5rem 0.7rem;
 				border: 1px solid #d0d7de;
@@ -70,41 +90,91 @@
 				width: 100%;
 				margin-bottom: 0.4rem;
 			}
-			#search:focus { border-color: #0969da; }
+			#search:focus {
+				border-color: #0969da;
+			}
 			#pkglist {
-				font-family: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, monospace;
+				font-family:
+					ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas,
+					monospace;
 				font-size: 0.85rem;
 				line-height: 1.8;
 				overflow-x: auto;
 			}
-			.pkg { display: block; white-space: nowrap; }
-			.pkg.hidden { display: none; }
-			.ver-ok { color: #1a7f37; font-size: 0.8em; }
-			.ver-update { color: #bf8700; font-size: 0.8em; }
-			.ver-error { color: #656d76; font-size: 0.8em; }
+			.pkg {
+				display: block;
+				white-space: nowrap;
+			}
+			.pkg.hidden {
+				display: none;
+			}
+			.ver-ok {
+				color: #1a7f37;
+				font-size: 0.8em;
+			}
+			.ver-update {
+				color: #bf8700;
+				font-size: 0.8em;
+			}
+			.ver-error {
+				color: #656d76;
+				font-size: 0.8em;
+			}
 			@media (prefers-color-scheme: dark) {
-				body { color: #c9d1d9; background: #0d1117; }
-				h1 { border-bottom-color: #30363d; }
-				.subtitle, h2, .cmd-label, .source { color: #8b949e; }
-				.cmd { background: #161b22; border-color: #30363d; }
-				a { color: #58a6ff; }
-				#search { background: #161b22; border-color: #30363d; color: #c9d1d9; }
-				#search:focus { border-color: #58a6ff; }
-				.ver-ok { color: #3fb950; }
-				.ver-update { color: #d29922; }
-				.ver-error { color: #8b949e; }
+				body {
+					color: #c9d1d9;
+					background: #0d1117;
+				}
+				h1 {
+					border-bottom-color: #30363d;
+				}
+				.subtitle,
+				h2,
+				.cmd-label,
+				.source {
+					color: #8b949e;
+				}
+				.cmd {
+					background: #161b22;
+					border-color: #30363d;
+				}
+				a {
+					color: #58a6ff;
+				}
+				#search {
+					background: #161b22;
+					border-color: #30363d;
+					color: #c9d1d9;
+				}
+				#search:focus {
+					border-color: #58a6ff;
+				}
+				.ver-ok {
+					color: #3fb950;
+				}
+				.ver-update {
+					color: #d29922;
+				}
+				.ver-error {
+					color: #8b949e;
+				}
 			}
 		</style>
 	</head>
 	<body>
 		<div class="container">
 			<h1>Void Repository</h1>
-			<p class="subtitle">A third-party Void Linux binary package repository.</p>
+			<p class="subtitle">
+				A third-party Void Linux binary package repository.
+			</p>
 
 			<div class="section">
 				<h2>Setup</h2>
 				<span class="cmd-label">Add the repository:</span>
-				<code class="cmd">echo "repository=https://void.creations.works" | sudo tee /etc/xbps.d/creations.conf</code>
+				<code class="cmd"
+					>echo "repository=https://void.creations.works" | sudo tee
+					/etc/xbps.d/creations.conf</code
+				>
 				<span class="cmd-label">Install a package:</span>
 				<code class="cmd">sudo xbps-install -S &lt;package&gt;</code>
 				<span class="cmd-label">Update all packages:</span>
@@ -112,26 +182,42 @@
 			</div>
 
 			<div class="section">
-				<p class="source">Source: <a href="https://github.com/Creationsss/void-repository">github.com/Creationsss/void-repository</a></p>
+				<p class="source">
+					Source:
+					<a href="https://github.com/Creationsss/void-repository"
+						>github.com/Creationsss/void-repository</a
+					>
+				</p>
 			</div>
 
 			<div class="section">
 				<h2>Packages</h2>
-				<input type="text" id="search" placeholder="search..." autocomplete="off" />
+				<input
+					type="text"
+					id="search"
+					placeholder="search..."
+					autocomplete="off"
+				/>
 				<div id="pkglist">
-<!-- PACKAGES -->
+					<!-- PACKAGES -->
 				</div>
 			</div>
 		</div>
 	</body>
 	<script>
-		document.getElementById("search").addEventListener("input", function () {
-			var q = this.value.toLowerCase();
-			var pkgs = document.querySelectorAll(".pkg");
-			for (var i = 0; i < pkgs.length; i++) {
-				pkgs[i].classList.toggle("hidden", q && pkgs[i].textContent.toLowerCase().indexOf(q) === -1);
-			}
-		});
+		document
+			.getElementById("search")
+			.addEventListener("input", function () {
+				var q = this.value.toLowerCase();
+				var pkgs = document.querySelectorAll(".pkg");
+				for (var i = 0; i < pkgs.length; i++) {
+					pkgs[i].classList.toggle(
+						"hidden",
+						q &&
+							pkgs[i].textContent.toLowerCase().indexOf(q) === -1,
+					);
+				}
+			});
 
 		(function () {
 			var CACHE_KEY = "void-repo-versions";
@@ -154,7 +240,10 @@
 
 			function saveCache() {
 				try {
-					localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: cache }));
+					localStorage.setItem(
+						CACHE_KEY,
+						JSON.stringify({ ts: Date.now(), data: cache }),
+					);
 				} catch (e) {}
 			}
 
@@ -176,38 +265,80 @@
 				if (api === "labymod") {
 					url = apiUrl || "https://void-proxy.creations.works";
 				} else if (api === "gitlab") {
-					url = apiUrl + "/api/v4/projects/" + encodeURIComponent(repo) + "/repository/tags";
+					url =
+						apiUrl +
+						"/api/v4/projects/" +
+						encodeURIComponent(repo) +
+						"/repository/tags";
 				} else if (api === "codeberg") {
-					url = "https://codeberg.org/api/v1/repos/" + repo + "/releases/latest";
+					url =
+						"https://codeberg.org/api/v1/repos/" +
+						repo +
+						"/releases/latest";
 				} else if (api === "github-tags") {
 					url = "https://api.github.com/repos/" + repo + "/tags";
-				} else if (prefix === "desktop-v" || prefix.indexOf("@") === 0) {
+				} else if (
+					prefix === "desktop-v" ||
+					prefix.indexOf("@") === 0
+				) {
 					url = "https://api.github.com/repos/" + repo + "/releases";
 				} else {
-					url = "https://api.github.com/repos/" + repo + "/releases/latest";
+					url = "https://api.github.com/repos/" + repo + "/releases";
 				}
 
 				pending++;
 				fetch(url)
-					.then(function (r) { return r.json(); })
+					.then(function (r) {
+						return r.json();
+					})
 					.then(function (data) {
 						var tag;
 						if (api === "labymod" && Array.isArray(data)) {
 							var filterType = prefix || "LAUNCHER";
 							for (var m = 0; m < data.length; m++) {
-								if (data[m].type === filterType) { tag = data[m].version; break; }
+								if (data[m].type === filterType) {
+									tag = data[m].version;
+									break;
+								}
 							}
-						} else if ((api === "gitlab" || api === "github-tags") && Array.isArray(data) && data.length > 0) {
+						} else if (
+							(api === "gitlab" || api === "github-tags") &&
+							Array.isArray(data) &&
+							data.length > 0
+						) {
 							for (var k = 0; k < data.length; k++) {
 								var t = data[k].name;
-								if (!prefix || (t && t.indexOf(prefix) === 0)) { tag = t; break; }
+								if (t && t.indexOf("/") !== -1) continue; // skip sub-product tags like "android/X.Y"
+								if (!prefix || (t && t.indexOf(prefix) === 0)) {
+									tag = t;
+									break;
+								}
 							}
-						} else if ((prefix === "desktop-v" || prefix.indexOf("@") === 0) && Array.isArray(data)) {
+						} else if (
+							(prefix === "desktop-v" ||
+								prefix.indexOf("@") === 0) &&
+							Array.isArray(data)
+						) {
 							for (var j = 0; j < data.length; j++) {
-								if (data[j].tag_name && data[j].tag_name.indexOf(prefix) === 0) {
+								if (
+									data[j].tag_name &&
+									data[j].tag_name.indexOf(prefix) === 0
+								) {
 									tag = data[j].tag_name;
 									break;
 								}
+							}
+						} else if (Array.isArray(data)) {
+							for (var n = 0; n < data.length; n++) {
+								var r = data[n];
+								if (r.prerelease) continue;
+								if (
+									r.tag_name &&
+									r.tag_name.indexOf("/") !== -1
+								)
+									continue;
+								tag = r.tag_name;
+								break;
 							}
 						} else {
 							tag = data.tag_name;

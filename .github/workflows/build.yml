@@ -103,9 +103,11 @@ jobs:
         run: |
           cd /void-packages
           built=""
+          failed=""
           build_one() {
             local pkgname="$1" force="${2:-false}"
             echo "$built" | grep -qx "$pkgname" && return 0
+            echo "$failed" | grep -qx "$pkgname" && return 0
             if [ "$force" != "true" ] && [ -n "$BUILD_ONLY" ]; then
               echo "$BUILD_ONLY" | tr ' ' '\n' | grep -qx "$pkgname" || return 0
             fi
@@ -115,8 +117,12 @@ jobs:
                     hostdir/binpkgs/${pkgname}${suffix}-[0-9]*.xbps.sig2
             done
             echo ":: Building $pkgname..."
-            ./xbps-src -j"$(nproc)" pkg "$pkgname"
-            built="$(printf '%s\n%s' "$built" "$pkgname")"
+            if ./xbps-src -j"$(nproc)" pkg "$pkgname"; then
+              built="$(printf '%s\n%s' "$built" "$pkgname")"
+            else
+              echo "::warning::Failed to build $pkgname (continuing with remaining packages)"
+              failed="$(printf '%s\n%s' "$failed" "$pkgname")"
+            fi
           }
           for pkg in "$GITHUB_WORKSPACE"/srcpkgs/*/; do
             [ -L "${pkg%/}" ] && continue
@@ -138,6 +144,9 @@ jobs:
             done
             build_one "$pkgname"
           done
+          if [ -n "$failed" ]; then
+            echo ":: Build summary — failed packages:$failed"
+          fi
 
       - name: Import signing key
         env:
