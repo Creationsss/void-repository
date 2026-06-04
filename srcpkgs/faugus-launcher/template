@@ -1,0 +1,20 @@
+# Template file for 'faugus-launcher'
+pkgname=faugus-launcher
+version=1.20.4
+revision=1
+build_style=meson
+hostmakedepends="pkg-config gettext gtk-update-icon-cache"
+depends="python3 python3-gobject python3-requests python3-Pillow python3-vdf
+ python3-psutil python3-pygame python3-cairo python3-icoextract
+ gtk+3 libcanberra libayatana-appindicator Vulkan-Tools ImageMagick
+ umu-launcher hicolor-icon-theme desktop-file-utils"
+short_desc="Lightweight launcher for running Windows games via UMU-Launcher"
+maintainer="creations <creations@creations.works>"
+license="MIT"
+homepage="https://github.com/Faugus/faugus-launcher"
+distfiles="https://github.com/Faugus/faugus-launcher/archive/refs/tags/${version}.tar.gz"
+checksum=373e8732f0ddd965e6922d79a7a5d0c8b46ecd248b9734c25d21f0d539b26c0b
+
+post_install() {
+	vlicense LICENSE
+}
