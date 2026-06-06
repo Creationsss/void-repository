@@ -145,55 +145,9 @@ jobs:
               run: rm -f /void-packages/hostdir/binpkgs/*-repodata* /void-packages/hostdir/binpkgs/*-stagedata* /void-packages/hostdir/binpkgs/*.plist
 
             - name: Build cluster
-              run: |
-                  cd /void-packages
-                  if [ "$BUILD_ONLY" = "__none__" ]; then
-                    echo ":: Filter resolved to no packages"
-                    mkdir -p /tmp/built-xbps
-                    exit 0
-                  fi
-                  pkgs=""
-                  for p in $CLUSTER_PKGS; do
-                    if [ -n "$BUILD_ONLY" ]; then
-                      case " $BUILD_ONLY " in *" $p "*) pkgs="$pkgs $p" ;; esac
-                    else
-                      pkgs="$pkgs $p"
-                    fi
-                  done
-                  pkgs="$(echo "$pkgs" | xargs)"
-                  if [ -z "$pkgs" ]; then
-                    echo ":: Nothing to build in cluster ${{ matrix.cluster.name }}"
-                    mkdir -p /tmp/built-xbps
-                    exit 0
-                  fi
-                  sorted="$(./xbps-src sort-dependencies $pkgs 2>/dev/null || echo "$pkgs")"
-                  echo ":: Build order: $sorted"
-                  mkdir -p /tmp/built-xbps
-                  touch /tmp/build-start
-                  failed=""
-                  for pkgname in $sorted; do
-                    for suffix in "" "-devel" "-dbg" "-doc" "-libs" "-32bit"; do
-                      rm -f hostdir/binpkgs/${pkgname}${suffix}-[0-9]*.xbps \
-                            hostdir/binpkgs/${pkgname}${suffix}-[0-9]*.xbps.sig2
-                    done
-                    echo ":: Building $pkgname..."
-                    if ./xbps-src -j"$(nproc)" pkg "$pkgname"; then
-                      echo ":: $pkgname built"
-                    else
-                      echo "::warning::Failed to build $pkgname (continuing)"
-                      failed="$failed $pkgname"
-                      echo ":: Re-bootstrapping masterdir after failure..."
-                      ./xbps-src zap
-                      ./xbps-src binary-bootstrap
-                      cp /usr/local/bin/bun masterdir-x86_64/usr/bin/bun
-                    fi
-                  done
-                  find hostdir/binpkgs -maxdepth 1 -name '*.xbps' -newer /tmp/build-start \
-                    -exec cp -t /tmp/built-xbps {} +
-                  ls /tmp/built-xbps | sed 's/^/  -> /'
-                  if [ -n "$failed" ]; then
-                    echo "::warning::cluster ${{ matrix.cluster.name }} failed: $failed"
-                  fi
+              env:
+                  CLUSTER_NAME: ${{ matrix.cluster.name }}
+              run: sh "$GITHUB_WORKSPACE/.github/scripts/build-cluster.sh"
 
             - name: Upload cluster artifacts
               uses: actions/upload-artifact@v4
@@ -244,21 +198,7 @@ jobs:
                   fi
 
             - name: Remove cached packages no longer in srcpkgs
-              run: |
-                  cd /void-packages/hostdir/binpkgs
-                  for xbps in *.xbps; do
-                    [ -f "$xbps" ] || continue
-                    pkgver="$(echo "${xbps%.xbps}" | sed 's/\.[a-zA-Z0-9_]*$//')"
-                    pkgname="$(xbps-uhelper getpkgname "$pkgver" 2>/dev/null)" || { echo ":: skip malformed $xbps"; continue; }
-                    base="$pkgname"
-                    for suffix in -devel -dbg -doc -libs -32bit; do
-                      base="${base%$suffix}"
-                    done
-                    if [ ! -d "$GITHUB_WORKSPACE/srcpkgs/$pkgname" ] && [ ! -d "$GITHUB_WORKSPACE/srcpkgs/$base" ]; then
-                      echo ":: Removing stale: $xbps"
-                      rm -f "$xbps" "${xbps}.sig" "${xbps}.sig2"
-                    fi
-                  done
+              run: sh "$GITHUB_WORKSPACE/.github/scripts/stale-cleanup.sh"
 
             - name: Sign and index repository
               env:
@@ -288,87 +228,7 @@ jobs:
                   key: xbps-pkgs-v3-${{ github.run_id }}
 
             - name: Prepare site
-              run: |
-                  pkglist=""
-                  for pkg in "$GITHUB_WORKSPACE"/srcpkgs/*/; do
-                    [ -L "${pkg%/}" ] && continue
-                    name="$(basename "$pkg")"
-                    ver="$(sed -n 's/^version=//p' "$pkg/template")"
-                    rev="$(sed -n 's/^revision=//p' "$pkg/template")"
-                    desc="$(sed -n 's/^short_desc="\(.*\)"/\1/p' "$pkg/template")"
-                    dist="$(sed -n '/^distfiles=/{s/^distfiles="//;s/"$//;p;q}' "$pkg/template")"
-                    no_vcheck="$(sed -n 's/^_no_vcheck=//p' "$pkg/template")"
-
-                    api="github"
-                    api_url=""
-                    repo=""
-                    tag_prefix=""
-
-                    kde_project="$(sed -n 's/^_kde_project="\(.*\)"/\1/p' "$pkg/template")"
-
-                    vcheck_repo="$(sed -n 's/^_vcheck_repo="\(.*\)"/\1/p' "$pkg/template")"
-                    vcheck_tag_prefix="$(sed -n 's/^_vcheck_tag_prefix="\(.*\)"/\1/p' "$pkg/template")"
-                    build="$(sed -n 's/^_build=//p' "$pkg/template")"
-                    check_ver="$ver"
-                    if [ -n "$build" ]; then
-                      check_ver="${ver}-${build}"
-                    fi
-
-                    if [ -n "$vcheck_repo" ]; then
-                      repo="$vcheck_repo"
-                      api="github-tags"
-                      [ -n "$vcheck_tag_prefix" ] && tag_prefix="$vcheck_tag_prefix"
-                    elif [ -n "$kde_project" ]; then
-                      api="gitlab"
-                      api_url="https://invent.kde.org"
-                      repo="$kde_project"
-                      tag_prefix="v"
-                    elif echo "$dist" | grep -q 'github\.com'; then
-                      repo="$(echo "$dist" | sed -n 's|.*github\.com/\([^/]*/[^/]*\)/.*|\1|p')"
-                    elif echo "$dist" | grep -q 'codeberg\.org'; then
-                      api="codeberg"
-                      repo="$(echo "$dist" | sed -n 's|.*codeberg\.org/\([^/]*/[^/]*\)/.*|\1|p')"
-                    elif echo "$dist" | grep -q 'heliopolis\.live'; then
-                      api="gitlab"
-                      api_url="https://heliopolis.live"
-                      repo="$(echo "$dist" | sed -n 's|.*heliopolis\.live/\([^/]*/[^/]*\)/.*|\1|p')"
-                    fi
-
-                    vcheck_api="$(sed -n 's/^_vcheck_api="\(.*\)"/\1/p' "$pkg/template")"
-                    vcheck_url="$(sed -n 's/^_vcheck_url="\(.*\)"/\1/p' "$pkg/template")"
-                    if [ -n "$vcheck_api" ]; then
-                      api="$vcheck_api"
-                      repo="$name"
-                      [ -n "$vcheck_url" ] && api_url="$vcheck_url"
-                    fi
-
-                    if echo "$dist" | grep -q "release_candidate_\${version}\|release_candidate_${ver}"; then
-                      tag_prefix="release_candidate_"
-                    elif echo "$dist" | grep -q "desktop-v\${version}\|desktop-v${ver}"; then
-                      tag_prefix="desktop-v"
-                    elif echo "$dist" | grep -q "@[^@]*@\${version}\|@[^@]*@${ver}"; then
-                      tag_prefix="$(echo "$dist" | sed -n 's|.*\(@[^@]*@\)\${version}.*|\1|p')"
-                      [ -z "$tag_prefix" ] && tag_prefix="$(echo "$dist" | sed -n 's|.*\(@[^@]*@\)'"${ver}"'.*|\1|p')"
-                    elif echo "$dist" | grep -q "v\${version}\|v${ver}\|tags/v"; then
-                      tag_prefix="v"
-                    fi
-
-                    if [ "$no_vcheck" = "yes" ]; then
-                      attrs=""
-                    else
-                      attrs="data-repo='${repo}' data-version='${check_ver}' data-tag-prefix='${tag_prefix}' data-api='${api}'"
-                      if [ -n "$api_url" ]; then
-                        attrs="${attrs} data-api-url='${api_url}'"
-                      fi
-                    fi
-
-                    pkglist="${pkglist}<span class='pkg' ${attrs}>  ${name} ${ver}_${rev} - ${desc}</span>"
-                  done
-                  cp "$GITHUB_WORKSPACE/index.html" /void-packages/hostdir/binpkgs/index.html
-                  printf '%s\n' "$pkglist" > /tmp/pkglist.html
-                  sed -i '/<!-- PACKAGES -->/{r /tmp/pkglist.html
-                  d
-                  }' /void-packages/hostdir/binpkgs/index.html
+              run: sh "$GITHUB_WORKSPACE/.github/scripts/prepare-site.sh"
 
             - name: Upload to R2
               env:
