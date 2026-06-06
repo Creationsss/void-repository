@@ -125,6 +125,7 @@ jobs:
             - name: Bootstrap xbps-src
               run: |
                   cd /void-packages
+                  echo "XBPS_ALLOW_CHROOT_BREAKOUT=yes" >> etc/conf
                   ./xbps-src binary-bootstrap
                   cp /usr/local/bin/bun masterdir-x86_64/usr/bin/bun
 
