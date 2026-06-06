@@ -28,13 +28,9 @@ jobs:
               run: |
                   filter="$(printf '%s' "$COMMIT_MSG" | grep -oE '\[[^]]+\]' | sed 's/\[//;s/\]//' | grep -viE '^(skip ci|ci skip|no ci|skip actions|actions skip)$' | tr '\n' ' ' | xargs)"
                   if [ -z "$filter" ]; then
-                    # No build-scoping brackets at all → build everything.
                     echo "build_only=" >> "$GITHUB_OUTPUT"
                     echo ":: Building all packages"
                   else
-                    # Brackets were specified — keep only tokens matching real srcpkgs.
-                    # If none match, build NOTHING (don't accidentally trigger a full
-                    # rebuild from a non-pkg bracket like [wip] or [v2]).
                     valid=""
                     for tok in $filter; do
                       if [ -d "srcpkgs/$tok" ]; then
@@ -53,13 +49,9 @@ jobs:
 
             - name: Build cluster manifest
               id: clusters
+              env:
+                  FILTER: ${{ steps.filter.outputs.build_only }}
               run: |
-                  # Packages prone to xbps autoremove proplib race (xbps#377/#510/#660)
-                  # are isolated so a poisoned masterdir can't cascade onto others.
-                  # CAVEAT: packages in `main` must not build-depend on anything in
-                  # `isolated` (runtime depends are fine — the assembled R2 repo
-                  # resolves those at install time). If you add such a build-dep,
-                  # move the dependent into `isolated` or merge the clusters.
                   isolated="umu-launcher faugus-launcher"
                   main=""
                   for d in srcpkgs/*/; do
@@ -72,7 +64,20 @@ jobs:
                   done
                   main="$(echo "$main" | xargs)"
                   isolated="$(echo "$isolated" | xargs)"
-                  printf 'clusters=[{"name":"isolated","pkgs":"%s"},{"name":"main","pkgs":"%s"}]\n' "$isolated" "$main" >> "$GITHUB_OUTPUT"
+                  if [ -n "$FILTER" ] && [ "$FILTER" != "__none__" ]; then
+                    new=""; for p in $isolated; do case " $FILTER " in *" $p "*) new="$new $p" ;; esac; done
+                    isolated="$(echo "$new" | xargs)"
+                    new=""; for p in $main; do case " $FILTER " in *" $p "*) new="$new $p" ;; esac; done
+                    main="$(echo "$new" | xargs)"
+                  elif [ "$FILTER" = "__none__" ]; then
+                    isolated=""; main=""
+                  fi
+                  json="["; sep=""
+                  [ -n "$isolated" ] && { json="${json}${sep}{\"name\":\"isolated\",\"pkgs\":\"$isolated\"}"; sep=","; }
+                  [ -n "$main" ] && { json="${json}${sep}{\"name\":\"main\",\"pkgs\":\"$main\"}"; sep=","; }
+                  json="${json}]"
+                  echo "clusters=$json" >> "$GITHUB_OUTPUT"
+                  echo ":: Matrix: $json"
 
     build:
         needs: discover
@@ -142,13 +147,11 @@ jobs:
             - name: Build cluster
               run: |
                   cd /void-packages
-                  # Sentinel meaning "brackets present, no valid tokens" — short-circuit.
                   if [ "$BUILD_ONLY" = "__none__" ]; then
                     echo ":: Filter resolved to no packages"
                     mkdir -p /tmp/built-xbps
                     exit 0
                   fi
-                  # Intersect cluster pkgs with BUILD_ONLY (if set).
                   pkgs=""
                   for p in $CLUSTER_PKGS; do
                     if [ -n "$BUILD_ONLY" ]; then
@@ -163,15 +166,12 @@ jobs:
                     mkdir -p /tmp/built-xbps
                     exit 0
                   fi
-                  # Topological sort so local makedeps build first.
                   sorted="$(./xbps-src sort-dependencies $pkgs 2>/dev/null || echo "$pkgs")"
                   echo ":: Build order: $sorted"
-                  # Mark start time; afterwards we collect every .xbps newer than this.
                   mkdir -p /tmp/built-xbps
                   touch /tmp/build-start
                   failed=""
                   for pkgname in $sorted; do
-                    # Drop stale older versions of pkg + standard subpkgs from binpkgs.
                     for suffix in "" "-devel" "-dbg" "-doc" "-libs" "-32bit"; do
                       rm -f hostdir/binpkgs/${pkgname}${suffix}-[0-9]*.xbps \
                             hostdir/binpkgs/${pkgname}${suffix}-[0-9]*.xbps.sig2
@@ -182,19 +182,12 @@ jobs:
                     else
                       echo "::warning::Failed to build $pkgname (continuing)"
                       failed="$failed $pkgname"
-                      # xbps removes files from disk BEFORE finalizing pkgdb (no rollback),
-                      # so a failed autoremove transaction leaves the masterdir without
-                      # bash/python/perl while the chroot's pkgdb still claims they exist.
-                      # Every subsequent xbps-uchroot then errors "Failed to execute
-                      # command /void-packages/xbps-src". xbps#377/#510/#660 — no upstream fix.
                       echo ":: Re-bootstrapping masterdir after failure..."
                       ./xbps-src zap
                       ./xbps-src binary-bootstrap
                       cp /usr/local/bin/bun masterdir-x86_64/usr/bin/bun
                     fi
                   done
-                  # Collect every freshly produced .xbps (including subpackages with
-                  # non-standard names) — anything modified after build-start.
                   find hostdir/binpkgs -maxdepth 1 -name '*.xbps' -newer /tmp/build-start \
                     -exec cp -t /tmp/built-xbps {} +
                   ls /tmp/built-xbps | sed 's/^/  -> /'
@@ -255,10 +248,8 @@ jobs:
                   cd /void-packages/hostdir/binpkgs
                   for xbps in *.xbps; do
                     [ -f "$xbps" ] || continue
-                    # Strip any arch suffix (.x86_64, .i686, .noarch, …) not just x86_64.
                     pkgver="$(echo "${xbps%.xbps}" | sed 's/\.[a-zA-Z0-9_]*$//')"
                     pkgname="$(xbps-uhelper getpkgname "$pkgver" 2>/dev/null)" || { echo ":: skip malformed $xbps"; continue; }
-                    # Strip standard subpackage suffixes when locating parent srcpkg.
                     base="$pkgname"
                     for suffix in -devel -dbg -doc -libs -32bit; do
                       base="${base%$suffix}"
