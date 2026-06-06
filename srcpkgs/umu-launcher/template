@@ -3,7 +3,7 @@ pkgname=umu-launcher
 version=1.4.0
 revision=1
 archs="x86_64"
-hostmakedepends="bash git scdoc cargo python3-build python3-installer hatchling"
+hostmakedepends="bash cargo python3-build python3-installer hatchling"
 depends="python3 python3-xlib python3-urllib3 python3-pyzstd python3-xxhash
  python3-truststore python3-filelock bash curl dbus desktop-file-utils
  diffutils freetype gdk-pixbuf hicolor-icon-theme libcurl libxcrypt-compat
@@ -25,10 +25,11 @@ do_configure() {
 do_build() {
 	# Skip umu-vendored — we use system python3-{xlib,pyzstd,urllib3} instead.
 	# Submodules in subprojects/ aren't shipped in the release tarball.
-	make umu-dist umu-docs umu-delta
+	# umu-docs skipped to avoid pulling scdoc (autoremove blast surface).
+	make umu-dist umu-delta
 }
 
 do_install() {
-	make DESTDIR="${DESTDIR}" umu-dist-install umu-docs-install umu-delta-install
+	make DESTDIR="${DESTDIR}" umu-dist-install umu-delta-install
 	vlicense LICENSE
 }

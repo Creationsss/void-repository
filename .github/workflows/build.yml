@@ -1,266 +1,390 @@
 name: Build and publish XBPS packages
 
 on:
-  push:
-    branches: [main]
-  workflow_dispatch:
+    push:
+        branches: [main]
+    workflow_dispatch:
 
 permissions:
-  contents: read
+    contents: read
 
 concurrency:
-  group: deploy
-  cancel-in-progress: false
+    group: deploy
+    cancel-in-progress: false
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/void-linux/void-glibc-full:latest
-      options: --privileged
-    steps:
-      - name: Install dependencies
-        run: |
-          xbps-install -Syu -y
-          xbps-install -y git xbps xtools base-devel curl unzip void-repo-multilib
-          xbps-install -Sy -y gcc-multilib glibc-devel-32bit vulkan-loader-devel-32bit \
-            MesaLib-devel-32bit libX11-devel-32bit libxcb-devel-32bit wayland-devel-32bit
+    discover:
+        runs-on: ubuntu-latest
+        outputs:
+            clusters: ${{ steps.clusters.outputs.clusters }}
+            build_only: ${{ steps.filter.outputs.build_only }}
+        steps:
+            - uses: actions/checkout@v4
 
-      - name: Install bun
+            - name: Detect build filter
+              id: filter
+              env:
+                  COMMIT_MSG: ${{ github.event.head_commit.message }}
+              run: |
+                  filter="$(printf '%s' "$COMMIT_MSG" | grep -oE '\[[^]]+\]' | sed 's/\[//;s/\]//' | grep -viE '^(skip ci|ci skip|no ci|skip actions|actions skip)$' | tr '\n' ' ' | xargs)"
+                  if [ -z "$filter" ]; then
+                    # No build-scoping brackets at all → build everything.
+                    echo "build_only=" >> "$GITHUB_OUTPUT"
+                    echo ":: Building all packages"
+                  else
+                    # Brackets were specified — keep only tokens matching real srcpkgs.
+                    # If none match, build NOTHING (don't accidentally trigger a full
+                    # rebuild from a non-pkg bracket like [wip] or [v2]).
+                    valid=""
+                    for tok in $filter; do
+                      if [ -d "srcpkgs/$tok" ]; then
+                        valid="$valid $tok"
+                      fi
+                    done
+                    valid="$(echo "$valid" | xargs)"
+                    if [ -n "$valid" ]; then
+                      echo "build_only=$valid" >> "$GITHUB_OUTPUT"
+                      echo ":: Filter: $valid"
+                    else
+                      echo "build_only=__none__" >> "$GITHUB_OUTPUT"
+                      echo "::warning::commit-message brackets present but no token matches a srcpkgs dir — nothing to build"
+                    fi
+                  fi
+
+            - name: Build cluster manifest
+              id: clusters
+              run: |
+                  # Packages prone to xbps autoremove proplib race (xbps#377/#510/#660)
+                  # are isolated so a poisoned masterdir can't cascade onto others.
+                  # CAVEAT: packages in `main` must not build-depend on anything in
+                  # `isolated` (runtime depends are fine — the assembled R2 repo
+                  # resolves those at install time). If you add such a build-dep,
+                  # move the dependent into `isolated` or merge the clusters.
+                  isolated="umu-launcher faugus-launcher"
+                  main=""
+                  for d in srcpkgs/*/; do
+                    [ -L "${d%/}" ] && continue
+                    name="$(basename "$d")"
+                    case " $isolated " in
+                      *" $name "*) ;;
+                      *) main="$main $name" ;;
+                    esac
+                  done
+                  main="$(echo "$main" | xargs)"
+                  isolated="$(echo "$isolated" | xargs)"
+                  printf 'clusters=[{"name":"isolated","pkgs":"%s"},{"name":"main","pkgs":"%s"}]\n' "$isolated" "$main" >> "$GITHUB_OUTPUT"
+
+    build:
+        needs: discover
+        runs-on: ubuntu-latest
+        container:
+            image: ghcr.io/void-linux/void-glibc-full:latest
+            options: --privileged
+        strategy:
+            fail-fast: false
+            matrix:
+                cluster: ${{ fromJson(needs.discover.outputs.clusters) }}
         env:
-          BUN_INSTALL: /usr/local
-        run: |
-          curl -fsSL https://bun.sh/install | bash
+            BUILD_ONLY: ${{ needs.discover.outputs.build_only }}
+            CLUSTER_PKGS: ${{ matrix.cluster.pkgs }}
+        steps:
+            - name: Install dependencies
+              run: |
+                  xbps-install -Syu -y
+                  xbps-install -y git xbps xtools base-devel curl unzip void-repo-multilib
+                  xbps-install -Sy -y gcc-multilib glibc-devel-32bit vulkan-loader-devel-32bit \
+                    MesaLib-devel-32bit libX11-devel-32bit libxcb-devel-32bit wayland-devel-32bit
 
-      - name: Checkout repo
-        uses: actions/checkout@v4
+            - name: Install bun
+              env:
+                  BUN_INSTALL: /usr/local
+              run: |
+                  curl -fsSL https://bun.sh/install | bash
 
-      - name: Clone void-packages
-        run: |
-          git clone --depth 1 https://github.com/void-linux/void-packages /void-packages
+            - name: Checkout repo
+              uses: actions/checkout@v4
 
-      - name: Detect build filter
-        env:
-          COMMIT_MSG: ${{ github.event.head_commit.message }}
-        run: |
-          filter="$(echo "$COMMIT_MSG" | grep -oE '\[[^]]+\]' | sed 's/\[//;s/\]//' | grep -viE '^(skip ci|ci skip|no ci|skip actions|actions skip)$' | tr '\n' ' ' | xargs)"
-          if [ -n "$filter" ]; then
-            echo "BUILD_ONLY=$filter" >> "$GITHUB_ENV"
-            echo ":: Building only: $filter"
-          else
-            echo ":: Building all packages"
-          fi
+            - name: Clone void-packages
+              run: |
+                  git clone --depth 1 https://github.com/void-linux/void-packages /void-packages
 
-      - name: Copy srcpkgs into void-packages
-        run: |
-          for pkg in srcpkgs/*/; do
-            pkgname="$(basename "$pkg")"
-            if [ -L "${pkg%/}" ]; then
-              target="$(readlink "${pkg%/}")"
-              ln -sf "$target" "/void-packages/srcpkgs/$pkgname"
-              echo ":: Linked $pkgname -> $target"
-            else
-              cp -rT "$pkg" "/void-packages/srcpkgs/$pkgname"
-              echo ":: Copied $pkgname"
-            fi
-          done
+            - name: Copy srcpkgs into void-packages
+              run: |
+                  for pkg in srcpkgs/*/; do
+                    pkgname="$(basename "$pkg")"
+                    if [ -L "${pkg%/}" ]; then
+                      target="$(readlink "${pkg%/}")"
+                      ln -sf "$target" "/void-packages/srcpkgs/$pkgname"
+                      echo ":: Linked $pkgname -> $target"
+                    else
+                      cp -rT "$pkg" "/void-packages/srcpkgs/$pkgname"
+                      echo ":: Copied $pkgname"
+                    fi
+                  done
 
-      - name: Bootstrap xbps-src
-        run: |
-          cd /void-packages
-          echo "XBPS_ALLOW_CHROOT_BREAKOUT=yes" >> etc/conf
-          echo "XBPS_ALLOW_RESTRICTED=yes" >> etc/conf
-          ./xbps-src binary-bootstrap
-          cp /usr/local/bin/bun masterdir-x86_64/usr/bin/bun
+            - name: Bootstrap xbps-src
+              run: |
+                  cd /void-packages
+                  ./xbps-src binary-bootstrap
+                  cp /usr/local/bin/bun masterdir-x86_64/usr/bin/bun
 
-      - name: Restore package cache
-        uses: actions/cache/restore@v4
-        with:
-          path: /void-packages/hostdir/binpkgs
-          key: xbps-pkgs-v3-
-          restore-keys: xbps-pkgs-v3-
+            - name: Restore package cache
+              uses: actions/cache/restore@v4
+              with:
+                  path: /void-packages/hostdir/binpkgs
+                  key: xbps-pkgs-v3-${{ github.run_id }}
+                  restore-keys: xbps-pkgs-v3-
 
-      - name: Clean stale repodata
-        run: rm -f /void-packages/hostdir/binpkgs/*-repodata /void-packages/hostdir/binpkgs/*.plist
+            - name: Clean stale repodata
+              run: rm -f /void-packages/hostdir/binpkgs/*-repodata* /void-packages/hostdir/binpkgs/*-stagedata* /void-packages/hostdir/binpkgs/*.plist
 
-      - name: Remove cached packages no longer in srcpkgs
-        run: |
-          cd /void-packages/hostdir/binpkgs
-          for xbps in *.xbps; do
-            [ -f "$xbps" ] || continue
-            pkgver="${xbps%.x86_64.xbps}"
-            pkgname="$(xbps-uhelper getpkgname "$pkgver" 2>/dev/null)" || continue
-            # strip subpackage suffixes (-devel, -dbg)
-            base="${pkgname%-devel}"
-            base="${base%-dbg}"
-            if [ ! -d "$GITHUB_WORKSPACE/srcpkgs/$pkgname" ] && [ ! -d "$GITHUB_WORKSPACE/srcpkgs/$base" ]; then
-              echo ":: Removing stale: $xbps"
-              rm -f "$xbps" "${xbps}.sig2"
-            fi
-          done
+            - name: Build cluster
+              run: |
+                  cd /void-packages
+                  # Sentinel meaning "brackets present, no valid tokens" — short-circuit.
+                  if [ "$BUILD_ONLY" = "__none__" ]; then
+                    echo ":: Filter resolved to no packages"
+                    mkdir -p /tmp/built-xbps
+                    exit 0
+                  fi
+                  # Intersect cluster pkgs with BUILD_ONLY (if set).
+                  pkgs=""
+                  for p in $CLUSTER_PKGS; do
+                    if [ -n "$BUILD_ONLY" ]; then
+                      case " $BUILD_ONLY " in *" $p "*) pkgs="$pkgs $p" ;; esac
+                    else
+                      pkgs="$pkgs $p"
+                    fi
+                  done
+                  pkgs="$(echo "$pkgs" | xargs)"
+                  if [ -z "$pkgs" ]; then
+                    echo ":: Nothing to build in cluster ${{ matrix.cluster.name }}"
+                    mkdir -p /tmp/built-xbps
+                    exit 0
+                  fi
+                  # Topological sort so local makedeps build first.
+                  sorted="$(./xbps-src sort-dependencies $pkgs 2>/dev/null || echo "$pkgs")"
+                  echo ":: Build order: $sorted"
+                  # Mark start time; afterwards we collect every .xbps newer than this.
+                  mkdir -p /tmp/built-xbps
+                  touch /tmp/build-start
+                  failed=""
+                  for pkgname in $sorted; do
+                    # Drop stale older versions of pkg + standard subpkgs from binpkgs.
+                    for suffix in "" "-devel" "-dbg" "-doc" "-libs" "-32bit"; do
+                      rm -f hostdir/binpkgs/${pkgname}${suffix}-[0-9]*.xbps \
+                            hostdir/binpkgs/${pkgname}${suffix}-[0-9]*.xbps.sig2
+                    done
+                    echo ":: Building $pkgname..."
+                    if ./xbps-src -j"$(nproc)" pkg "$pkgname"; then
+                      echo ":: $pkgname built"
+                    else
+                      echo "::warning::Failed to build $pkgname (continuing)"
+                      failed="$failed $pkgname"
+                      # xbps removes files from disk BEFORE finalizing pkgdb (no rollback),
+                      # so a failed autoremove transaction leaves the masterdir without
+                      # bash/python/perl while the chroot's pkgdb still claims they exist.
+                      # Every subsequent xbps-uchroot then errors "Failed to execute
+                      # command /void-packages/xbps-src". xbps#377/#510/#660 — no upstream fix.
+                      echo ":: Re-bootstrapping masterdir after failure..."
+                      ./xbps-src zap
+                      ./xbps-src binary-bootstrap
+                      cp /usr/local/bin/bun masterdir-x86_64/usr/bin/bun
+                    fi
+                  done
+                  # Collect every freshly produced .xbps (including subpackages with
+                  # non-standard names) — anything modified after build-start.
+                  find hostdir/binpkgs -maxdepth 1 -name '*.xbps' -newer /tmp/build-start \
+                    -exec cp -t /tmp/built-xbps {} +
+                  ls /tmp/built-xbps | sed 's/^/  -> /'
+                  if [ -n "$failed" ]; then
+                    echo "::warning::cluster ${{ matrix.cluster.name }} failed: $failed"
+                  fi
 
-      - name: Build packages
-        run: |
-          cd /void-packages
-          built=""
-          failed=""
-          build_one() {
-            local pkgname="$1" force="${2:-false}"
-            echo "$built" | grep -qx "$pkgname" && return 0
-            echo "$failed" | grep -qx "$pkgname" && return 0
-            if [ "$force" != "true" ] && [ -n "$BUILD_ONLY" ]; then
-              echo "$BUILD_ONLY" | tr ' ' '\n' | grep -qx "$pkgname" || return 0
-            fi
-            # remove old versions of pkg + common subpackages (-devel, -dbg)
-            for suffix in "" "-devel" "-dbg"; do
-              rm -f hostdir/binpkgs/${pkgname}${suffix}-[0-9]*.xbps \
-                    hostdir/binpkgs/${pkgname}${suffix}-[0-9]*.xbps.sig2
-            done
-            echo ":: Building $pkgname..."
-            if ./xbps-src -j"$(nproc)" pkg "$pkgname"; then
-              built="$(printf '%s\n%s' "$built" "$pkgname")"
-            else
-              echo "::warning::Failed to build $pkgname (continuing with remaining packages)"
-              failed="$(printf '%s\n%s' "$failed" "$pkgname")"
-            fi
-          }
-          for pkg in "$GITHUB_WORKSPACE"/srcpkgs/*/; do
-            [ -L "${pkg%/}" ] && continue
-            pkgname="$(basename "$pkg")"
-            # skip dependency check for packages not in BUILD_ONLY
-            if [ -n "$BUILD_ONLY" ]; then
-              echo "$BUILD_ONLY" | tr ' ' '\n' | grep -qx "$pkgname" || { build_one "$pkgname"; continue; }
-            fi
-            # extract only the dep-related lines to avoid false matches from provides/conflicts/etc
-            dep_lines="$(sed -n '/^\(host\)\?make\?depends=/,/"$/p' "$GITHUB_WORKSPACE/srcpkgs/$pkgname/template" 2>/dev/null)"
-            # build local makedepends first (force build even if not in BUILD_ONLY)
-            for dep_dir in "$GITHUB_WORKSPACE"/srcpkgs/*/; do
-              [ -L "${dep_dir%/}" ] && continue
-              dep="$(basename "$dep_dir")"
-              [ "$dep" = "$pkgname" ] && continue
-              if echo "$dep_lines" | grep -qw "$dep"; then
-                build_one "$dep" true
-              fi
-            done
-            build_one "$pkgname"
-          done
-          if [ -n "$failed" ]; then
-            echo ":: Build summary — failed packages:$failed"
-          fi
+            - name: Upload cluster artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                  name: cluster-${{ matrix.cluster.name }}
+                  path: /tmp/built-xbps/
+                  if-no-files-found: ignore
+                  retention-days: 7
 
-      - name: Import signing key
-        env:
-          XBPS_SIGNING_KEY: ${{ secrets.XBPS_SIGNING_KEY }}
-        run: |
-          mkdir -p /tmp/keys
-          echo "$XBPS_SIGNING_KEY" > /tmp/keys/private.pem
+    assemble:
+        needs: build
+        if: ${{ always() && !cancelled() }}
+        runs-on: ubuntu-latest
+        container:
+            image: ghcr.io/void-linux/void-glibc-full:latest
+        steps:
+            - name: Install dependencies
+              run: xbps-install -Syu -y && xbps-install -y xbps xtools aws-cli
 
-      - name: Sign repository
-        run: |
-          cd /void-packages/hostdir/binpkgs
-          xbps-rindex -a *.xbps
-          xbps-rindex --clean .
-          xbps-rindex --privkey /tmp/keys/private.pem --sign --signedby "Creations Void Repo" .
-          xbps-rindex --privkey /tmp/keys/private.pem --sign-pkg *.xbps
-          rm -f /tmp/keys/private.pem
-          cp "$GITHUB_WORKSPACE/repo-signing-key.pem" .
+            - uses: actions/checkout@v4
 
-      - name: Save package cache
-        uses: actions/cache/save@v4
-        with:
-          path: /void-packages/hostdir/binpkgs
-          key: xbps-pkgs-v3-${{ github.run_id }}
+            - name: Prepare binpkgs workspace
+              run: mkdir -p /void-packages/hostdir/binpkgs
 
-      - name: Prepare site
-        run: |
-          pkglist=""
-          for pkg in "$GITHUB_WORKSPACE"/srcpkgs/*/; do
-            [ -L "${pkg%/}" ] && continue
-            name="$(basename "$pkg")"
-            ver="$(sed -n 's/^version=//p' "$pkg/template")"
-            rev="$(sed -n 's/^revision=//p' "$pkg/template")"
-            desc="$(sed -n 's/^short_desc="\(.*\)"/\1/p' "$pkg/template")"
-            dist="$(sed -n '/^distfiles=/{s/^distfiles="//;s/"$//;p;q}' "$pkg/template")"
-            no_vcheck="$(sed -n 's/^_no_vcheck=//p' "$pkg/template")"
+            - name: Restore previous binpkg cache
+              uses: actions/cache/restore@v4
+              with:
+                  path: /void-packages/hostdir/binpkgs
+                  key: xbps-pkgs-v3-${{ github.run_id }}
+                  restore-keys: xbps-pkgs-v3-
 
-            api="github"
-            api_url=""
-            repo=""
-            tag_prefix=""
+            - name: Clean stale repodata
+              run: rm -f /void-packages/hostdir/binpkgs/*-repodata* /void-packages/hostdir/binpkgs/*-stagedata* /void-packages/hostdir/binpkgs/*.plist
 
-            kde_project="$(sed -n 's/^_kde_project="\(.*\)"/\1/p' "$pkg/template")"
+            - name: Download cluster artifacts
+              uses: actions/download-artifact@v4
+              with:
+                  path: /tmp/cluster-artifacts
+                  pattern: cluster-*
+                  merge-multiple: true
 
-            vcheck_repo="$(sed -n 's/^_vcheck_repo="\(.*\)"/\1/p' "$pkg/template")"
-            vcheck_tag_prefix="$(sed -n 's/^_vcheck_tag_prefix="\(.*\)"/\1/p' "$pkg/template")"
-            build="$(sed -n 's/^_build=//p' "$pkg/template")"
-            check_ver="$ver"
-            if [ -n "$build" ]; then
-              check_ver="${ver}-${build}"
-            fi
+            - name: Stage new .xbps into binpkgs
+              run: |
+                  if [ -d /tmp/cluster-artifacts ] && [ -n "$(ls -A /tmp/cluster-artifacts 2>/dev/null)" ]; then
+                    cp -fv /tmp/cluster-artifacts/*.xbps /void-packages/hostdir/binpkgs/
+                  else
+                    echo ":: No fresh cluster artifacts — assembling from cache only"
+                  fi
 
-            if [ -n "$vcheck_repo" ]; then
-              repo="$vcheck_repo"
-              api="github-tags"
-              [ -n "$vcheck_tag_prefix" ] && tag_prefix="$vcheck_tag_prefix"
-            elif [ -n "$kde_project" ]; then
-              api="gitlab"
-              api_url="https://invent.kde.org"
-              repo="$kde_project"
-              tag_prefix="v"
-            elif echo "$dist" | grep -q 'github\.com'; then
-              repo="$(echo "$dist" | sed -n 's|.*github\.com/\([^/]*/[^/]*\)/.*|\1|p')"
-            elif echo "$dist" | grep -q 'codeberg\.org'; then
-              api="codeberg"
-              repo="$(echo "$dist" | sed -n 's|.*codeberg\.org/\([^/]*/[^/]*\)/.*|\1|p')"
-            elif echo "$dist" | grep -q 'heliopolis\.live'; then
-              api="gitlab"
-              api_url="https://heliopolis.live"
-              repo="$(echo "$dist" | sed -n 's|.*heliopolis\.live/\([^/]*/[^/]*\)/.*|\1|p')"
-            fi
+            - name: Remove cached packages no longer in srcpkgs
+              run: |
+                  cd /void-packages/hostdir/binpkgs
+                  for xbps in *.xbps; do
+                    [ -f "$xbps" ] || continue
+                    # Strip any arch suffix (.x86_64, .i686, .noarch, …) not just x86_64.
+                    pkgver="$(echo "${xbps%.xbps}" | sed 's/\.[a-zA-Z0-9_]*$//')"
+                    pkgname="$(xbps-uhelper getpkgname "$pkgver" 2>/dev/null)" || { echo ":: skip malformed $xbps"; continue; }
+                    # Strip standard subpackage suffixes when locating parent srcpkg.
+                    base="$pkgname"
+                    for suffix in -devel -dbg -doc -libs -32bit; do
+                      base="${base%$suffix}"
+                    done
+                    if [ ! -d "$GITHUB_WORKSPACE/srcpkgs/$pkgname" ] && [ ! -d "$GITHUB_WORKSPACE/srcpkgs/$base" ]; then
+                      echo ":: Removing stale: $xbps"
+                      rm -f "$xbps" "${xbps}.sig" "${xbps}.sig2"
+                    fi
+                  done
 
-            vcheck_api="$(sed -n 's/^_vcheck_api="\(.*\)"/\1/p' "$pkg/template")"
-            vcheck_url="$(sed -n 's/^_vcheck_url="\(.*\)"/\1/p' "$pkg/template")"
-            if [ -n "$vcheck_api" ]; then
-              api="$vcheck_api"
-              repo="$name"
-              [ -n "$vcheck_url" ] && api_url="$vcheck_url"
-            fi
+            - name: Sign and index repository
+              env:
+                  XBPS_SIGNING_KEY: ${{ secrets.XBPS_SIGNING_KEY }}
+              run: |
+                  trap 'rm -f /tmp/keys/private.pem' EXIT
+                  mkdir -p /tmp/keys
+                  ( umask 077 && printf '%s\n' "$XBPS_SIGNING_KEY" > /tmp/keys/private.pem )
+                  cd /void-packages/hostdir/binpkgs
+                  shopt -s nullglob
+                  pkgs=( *.xbps )
+                  if [ ${#pkgs[@]} -eq 0 ]; then
+                    echo "::warning::No .xbps files to publish; skipping signing"
+                    exit 0
+                  fi
+                  xbps-rindex -a "${pkgs[@]}"
+                  xbps-rindex --remove-obsoletes .
+                  xbps-rindex --clean .
+                  xbps-rindex --privkey /tmp/keys/private.pem --sign --signedby "Creations Void Repo" .
+                  xbps-rindex --privkey /tmp/keys/private.pem --sign-pkg "${pkgs[@]}"
+                  cp "$GITHUB_WORKSPACE/repo-signing-key.pem" .
 
-            if echo "$dist" | grep -q "release_candidate_\${version}\|release_candidate_${ver}"; then
-              tag_prefix="release_candidate_"
-            elif echo "$dist" | grep -q "desktop-v\${version}\|desktop-v${ver}"; then
-              tag_prefix="desktop-v"
-            elif echo "$dist" | grep -q "@[^@]*@\${version}\|@[^@]*@${ver}"; then
-              tag_prefix="$(echo "$dist" | sed -n 's|.*\(@[^@]*@\)\${version}.*|\1|p')"
-              [ -z "$tag_prefix" ] && tag_prefix="$(echo "$dist" | sed -n 's|.*\(@[^@]*@\)'"${ver}"'.*|\1|p')"
-            elif echo "$dist" | grep -q "v\${version}\|v${ver}\|tags/v"; then
-              tag_prefix="v"
-            fi
+            - name: Save package cache
+              if: success()
+              uses: actions/cache/save@v4
+              with:
+                  path: /void-packages/hostdir/binpkgs
+                  key: xbps-pkgs-v3-${{ github.run_id }}
 
-            if [ "$no_vcheck" = "yes" ]; then
-              attrs=""
-            else
-              attrs="data-repo='${repo}' data-version='${check_ver}' data-tag-prefix='${tag_prefix}' data-api='${api}'"
-              if [ -n "$api_url" ]; then
-                attrs="${attrs} data-api-url='${api_url}'"
-              fi
-            fi
+            - name: Prepare site
+              run: |
+                  pkglist=""
+                  for pkg in "$GITHUB_WORKSPACE"/srcpkgs/*/; do
+                    [ -L "${pkg%/}" ] && continue
+                    name="$(basename "$pkg")"
+                    ver="$(sed -n 's/^version=//p' "$pkg/template")"
+                    rev="$(sed -n 's/^revision=//p' "$pkg/template")"
+                    desc="$(sed -n 's/^short_desc="\(.*\)"/\1/p' "$pkg/template")"
+                    dist="$(sed -n '/^distfiles=/{s/^distfiles="//;s/"$//;p;q}' "$pkg/template")"
+                    no_vcheck="$(sed -n 's/^_no_vcheck=//p' "$pkg/template")"
 
-            pkglist="${pkglist}<span class='pkg' ${attrs}>  ${name} ${ver}_${rev} - ${desc}</span>"
-          done
-          cp "$GITHUB_WORKSPACE/index.html" /void-packages/hostdir/binpkgs/index.html
-          printf '%s\n' "$pkglist" > /tmp/pkglist.html
-          sed -i '/<!-- PACKAGES -->/{r /tmp/pkglist.html
-          d
-          }' /void-packages/hostdir/binpkgs/index.html
+                    api="github"
+                    api_url=""
+                    repo=""
+                    tag_prefix=""
 
-      - name: Upload to R2
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: auto
-        run: |
-          xbps-install -y aws-cli
-          cd /void-packages/hostdir/binpkgs
-          aws s3 sync . s3://void-repo/ --delete \
-            --endpoint-url ${{ secrets.R2_ENDPOINT_URL }}
+                    kde_project="$(sed -n 's/^_kde_project="\(.*\)"/\1/p' "$pkg/template")"
+
+                    vcheck_repo="$(sed -n 's/^_vcheck_repo="\(.*\)"/\1/p' "$pkg/template")"
+                    vcheck_tag_prefix="$(sed -n 's/^_vcheck_tag_prefix="\(.*\)"/\1/p' "$pkg/template")"
+                    build="$(sed -n 's/^_build=//p' "$pkg/template")"
+                    check_ver="$ver"
+                    if [ -n "$build" ]; then
+                      check_ver="${ver}-${build}"
+                    fi
+
+                    if [ -n "$vcheck_repo" ]; then
+                      repo="$vcheck_repo"
+                      api="github-tags"
+                      [ -n "$vcheck_tag_prefix" ] && tag_prefix="$vcheck_tag_prefix"
+                    elif [ -n "$kde_project" ]; then
+                      api="gitlab"
+                      api_url="https://invent.kde.org"
+                      repo="$kde_project"
+                      tag_prefix="v"
+                    elif echo "$dist" | grep -q 'github\.com'; then
+                      repo="$(echo "$dist" | sed -n 's|.*github\.com/\([^/]*/[^/]*\)/.*|\1|p')"
+                    elif echo "$dist" | grep -q 'codeberg\.org'; then
+                      api="codeberg"
+                      repo="$(echo "$dist" | sed -n 's|.*codeberg\.org/\([^/]*/[^/]*\)/.*|\1|p')"
+                    elif echo "$dist" | grep -q 'heliopolis\.live'; then
+                      api="gitlab"
+                      api_url="https://heliopolis.live"
+                      repo="$(echo "$dist" | sed -n 's|.*heliopolis\.live/\([^/]*/[^/]*\)/.*|\1|p')"
+                    fi
+
+                    vcheck_api="$(sed -n 's/^_vcheck_api="\(.*\)"/\1/p' "$pkg/template")"
+                    vcheck_url="$(sed -n 's/^_vcheck_url="\(.*\)"/\1/p' "$pkg/template")"
+                    if [ -n "$vcheck_api" ]; then
+                      api="$vcheck_api"
+                      repo="$name"
+                      [ -n "$vcheck_url" ] && api_url="$vcheck_url"
+                    fi
+
+                    if echo "$dist" | grep -q "release_candidate_\${version}\|release_candidate_${ver}"; then
+                      tag_prefix="release_candidate_"
+                    elif echo "$dist" | grep -q "desktop-v\${version}\|desktop-v${ver}"; then
+                      tag_prefix="desktop-v"
+                    elif echo "$dist" | grep -q "@[^@]*@\${version}\|@[^@]*@${ver}"; then
+                      tag_prefix="$(echo "$dist" | sed -n 's|.*\(@[^@]*@\)\${version}.*|\1|p')"
+                      [ -z "$tag_prefix" ] && tag_prefix="$(echo "$dist" | sed -n 's|.*\(@[^@]*@\)'"${ver}"'.*|\1|p')"
+                    elif echo "$dist" | grep -q "v\${version}\|v${ver}\|tags/v"; then
+                      tag_prefix="v"
+                    fi
+
+                    if [ "$no_vcheck" = "yes" ]; then
+                      attrs=""
+                    else
+                      attrs="data-repo='${repo}' data-version='${check_ver}' data-tag-prefix='${tag_prefix}' data-api='${api}'"
+                      if [ -n "$api_url" ]; then
+                        attrs="${attrs} data-api-url='${api_url}'"
+                      fi
+                    fi
+
+                    pkglist="${pkglist}<span class='pkg' ${attrs}>  ${name} ${ver}_${rev} - ${desc}</span>"
+                  done
+                  cp "$GITHUB_WORKSPACE/index.html" /void-packages/hostdir/binpkgs/index.html
+                  printf '%s\n' "$pkglist" > /tmp/pkglist.html
+                  sed -i '/<!-- PACKAGES -->/{r /tmp/pkglist.html
+                  d
+                  }' /void-packages/hostdir/binpkgs/index.html
+
+            - name: Upload to R2
+              env:
+                  AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+                  AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+                  AWS_DEFAULT_REGION: auto
+              run: |
+                  cd /void-packages/hostdir/binpkgs
+                  aws s3 sync . s3://void-repo/ --delete \
+                    --endpoint-url ${{ secrets.R2_ENDPOINT_URL }}
