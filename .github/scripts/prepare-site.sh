@@ -50,7 +50,7 @@ for pkg in "$GITHUB_WORKSPACE"/srcpkgs/*/; do
     vcheck_url="$(sed -n 's/^_vcheck_url="\(.*\)"/\1/p' "$pkg/template")"
     if [ -n "$vcheck_api" ]; then
         api="$vcheck_api"
-        repo="$name"
+        [ -z "$vcheck_repo" ] && repo="$name"
         [ -n "$vcheck_url" ] && api_url="$vcheck_url"
     fi
 

@@ -13,7 +13,8 @@ checksum=b327b3871dcc139c05c4b6dadd6ebe51dacf1740df6f109dd6efbac970abeb32
 nostrip=yes
 allow_unknown_shlibs=yes
 skip_extraction="Wooting.Background.Service_${version}_amd64.AppImage"
-_no_vcheck=yes
+_vcheck_api="wooting"
+_vcheck_url="https://void-proxy.creations.works"
 
 do_extract() {
 	local _appimage="${XBPS_SRCDISTDIR}/${pkgname}-${version}/Wooting.Background.Service_${version}_amd64.AppImage"

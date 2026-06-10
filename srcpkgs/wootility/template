@@ -1,6 +1,6 @@
 # Template file for 'wootility'
 pkgname=wootility
-version=5.2.5
+version=5.3.1
 revision=1
 archs="x86_64"
 create_wrksrc=yes
@@ -10,7 +10,9 @@ maintainer="creations <creations@creations.works>"
 license="custom:Proprietary"
 homepage="https://wooting.io/wootility"
 distfiles="https://api.wooting.io/public/wootility/download?os=linux&version=${version}>Wootility-${version}.AppImage"
-checksum=6c3870948fb38b5df174c5ea4f9cedcd1ed134e2e04c1c4db631a41057b366cc
+checksum=291a978e0bb2947e458d5ea3f9c919c176e0e969b6cb4084f4741aa0d81fc9cd
+_vcheck_api="wooting"
+_vcheck_url="https://void-proxy.creations.works"
 nostrip=yes
 allow_unknown_shlibs=yes
 skip_extraction="Wootility-${version}.AppImage"

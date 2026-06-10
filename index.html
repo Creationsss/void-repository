@@ -269,6 +269,11 @@
 						"/repository/tags";
 				} else if (api === "gitea") {
 					url = apiUrl + "/api/v1/repos/" + repo + "/tags";
+				} else if (api === "wooting") {
+					url = apiUrl + "/wooting/" + repo;
+				} else if (api === "gh-branch") {
+					url =
+						apiUrl + "/gh-branch/" + repo + "/" + (prefix || "main");
 				} else if (api === "codeberg") {
 					url =
 						"https://codeberg.org/api/v1/repos/" +
@@ -292,7 +297,13 @@
 					})
 					.then(function (data) {
 						var tag;
-						if (api === "labymod" && Array.isArray(data)) {
+						if (
+							(api === "wooting" || api === "gh-branch") &&
+							data &&
+							data.version
+						) {
+							tag = data.version;
+						} else if (api === "labymod" && Array.isArray(data)) {
 							var filterType = prefix || "LAUNCHER";
 							for (var m = 0; m < data.length; m++) {
 								if (data[m].type === filterType) {

@@ -15,7 +15,6 @@ license="GPL-2.0-or-later"
 homepage="https://github.com/nowrep/obs-vkcapture"
 distfiles="https://github.com/nowrep/obs-vkcapture/archive/refs/tags/v${version}.tar.gz"
 checksum=4f0eecd574cf4765bf8a4c5e09b7c764d1c4a9128e6c6fea99e2c6474c494fe0
-_no_vcheck=yes
 
 do_build() {
 	cd obs-vkcapture-${version}
