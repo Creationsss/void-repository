@@ -217,7 +217,7 @@
 			});
 
 		(function () {
-			var CACHE_KEY = "void-repo-versions";
+			var CACHE_KEY = "void-repo-versions-v2";
 			var CACHE_TTL = 3600000;
 			var cache = {};
 
@@ -253,8 +253,9 @@
 
 				if (!repo) return;
 
-				if (cache[repo]) {
-					showResult(el, current, cache[repo]);
+				var cacheKey = api + ":" + repo + ":" + prefix;
+				if (cache[cacheKey]) {
+					showResult(el, current, cache[cacheKey]);
 					return;
 				}
 
@@ -364,7 +365,7 @@
 						}
 						latest = latest.replace(/-[A-Za-z]+$/, "");
 
-						cache[repo] = latest;
+						cache[cacheKey] = latest;
 						showResult(el, current, latest);
 					})
 					.catch(function () {
