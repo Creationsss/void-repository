@@ -41,7 +41,7 @@ for pkg in "$GITHUB_WORKSPACE"/srcpkgs/*/; do
         api="codeberg"
         repo="$(echo "$dist" | sed -n 's|.*codeberg\.org/\([^/]*/[^/]*\)/.*|\1|p')"
     elif echo "$dist" | grep -q 'heliopolis\.live'; then
-        api="gitlab"
+        api="gitea"
         api_url="https://heliopolis.live"
         repo="$(echo "$dist" | sed -n 's|.*heliopolis\.live/\([^/]*/[^/]*\)/.*|\1|p')"
     fi

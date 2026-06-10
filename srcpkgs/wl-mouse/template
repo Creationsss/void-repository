@@ -8,7 +8,7 @@ short_desc="CLI tool for WLmouse gaming mice configuration"
 maintainer="creations <creations@creations.works>"
 license="AGPL-3.0-or-later"
 homepage="https://heliopolis.live/creations/wl-mouse"
-distfiles="https://heliopolis.live/creations/wl-mouse/-/jobs/artifacts/${version}/raw/wl-mouse-linux-x86_64?job=build-release>wl-mouse-${version}"
+distfiles="https://heliopolis.live/creations/wl-mouse/releases/download/${version}/wl-mouse-linux-x86_64>wl-mouse-${version}"
 checksum=6b747339bd8db1a14fc1de4fd36311d3d9039f7e38609e51606b4f136aa3015d
 nostrip=yes
 skip_extraction="wl-mouse-${version}"

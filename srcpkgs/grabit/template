@@ -10,8 +10,9 @@ short_desc="Screenshot, screen recording, OCR, and uploader for wlroots Wayland"
 maintainer="creations <creations@creations.works>"
 license="BSD-3-Clause"
 homepage="https://heliopolis.live/creations/grabit"
-distfiles="https://heliopolis.live/creations/grabit/-/archive/${version}/grabit-${version}.tar.gz"
-checksum=aaf2db5c9eccf55556705eec1c9b69d467a352c38947707a17f8d19ff9f0ee27
+distfiles="https://heliopolis.live/creations/grabit/archive/${version}.tar.gz"
+checksum=47fbfadb2dc23ace3daf67bf3251161f1b370955e60ac977a3617ad01447c654
+wrksrc="grabit"
 replaces="grabit-c>=0"
 
 do_build() {

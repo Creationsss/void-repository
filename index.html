@@ -267,6 +267,8 @@
 						"/api/v4/projects/" +
 						encodeURIComponent(repo) +
 						"/repository/tags";
+				} else if (api === "gitea") {
+					url = apiUrl + "/api/v1/repos/" + repo + "/tags";
 				} else if (api === "codeberg") {
 					url =
 						"https://codeberg.org/api/v1/repos/" +
@@ -299,7 +301,9 @@
 								}
 							}
 						} else if (
-							(api === "gitlab" || api === "github-tags") &&
+							(api === "gitlab" ||
+								api === "gitea" ||
+								api === "github-tags") &&
 							Array.isArray(data) &&
 							data.length > 0
 						) {
