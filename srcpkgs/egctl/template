@@ -1,0 +1,19 @@
+# Template file for 'egctl'
+pkgname=egctl
+version=0.2.0
+revision=1
+archs="x86_64"
+depends="eudev"
+short_desc="CLI tool for configuring Endgame Gear OP1 8k v2 mouse via USB HID"
+maintainer="creations <creations@creations.works>"
+license="AGPL-3.0-or-later"
+homepage="https://heliopolis.live/creations/egctl"
+distfiles="https://heliopolis.live/creations/egctl/releases/download/${version}/egctl-linux-x86_64>egctl-${version}"
+checksum=d0707ca28e72b004e7e96ca7d3af27b21cc6d5b7b38142fd19f3d17955f24938
+nostrip=yes
+skip_extraction="egctl-${version}"
+
+do_install() {
+	vbin ${XBPS_SRCDISTDIR}/${pkgname}-${version}/egctl-${version} egctl
+	vinstall ${FILESDIR}/60-endgamegear.rules 644 usr/lib/udev/rules.d
+}
