@@ -251,6 +251,11 @@
 				var api = el.getAttribute("data-api") || "github";
 				var apiUrl = el.getAttribute("data-api-url") || "";
 
+				if (api === "rolling") {
+					appendStatus(el, "rolling", "ver-ok");
+					return;
+				}
+
 				if (!repo) return;
 
 				var cacheKey = api + ":" + repo + ":" + prefix;
