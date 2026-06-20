@@ -237,7 +237,15 @@ jobs:
                   AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
                   AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
                   AWS_DEFAULT_REGION: auto
+                  R2_ENDPOINT_URL: ${{ secrets.R2_ENDPOINT_URL }}
               run: |
                   cd /void-packages/hostdir/binpkgs
-                  aws s3 sync . s3://void-repo/ --delete \
-                    --endpoint-url ${{ secrets.R2_ENDPOINT_URL }}
+                  aws s3 sync . s3://void-repo/ --endpoint-url "$R2_ENDPOINT_URL"
+                  # phase 2: prune remote-only keys (real deletions of
+                  # packages we no longer have locally)
+                  aws s3 ls s3://void-repo/ --endpoint-url "$R2_ENDPOINT_URL" \
+                    | awk 'NF>=4 {print $NF}' \
+                    | while IFS= read -r key; do
+                        [ -e "./$key" ] || aws s3 rm "s3://void-repo/$key" \
+                          --endpoint-url "$R2_ENDPOINT_URL"
+                      done
