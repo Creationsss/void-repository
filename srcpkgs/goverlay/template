@@ -1,23 +1,24 @@
 # Template file for 'goverlay'
 pkgname=goverlay
-version=1.8.3
+version=1.8.4
 revision=1
 _version="${version//./_}"
+_appimage="goverlay_${_version}_x8664.appimage"
 archs="x86_64"
 create_wrksrc=yes
 short_desc="Easy graphical interface to configure MangoHud, vkBasalt, and OptiScaler"
 maintainer="creations <creations@creations.works>"
 license="GPL-3.0-or-later"
 homepage="https://github.com/benjamimgois/goverlay"
-distfiles="https://github.com/benjamimgois/goverlay/releases/download/${version}/goverlay_${_version}.AppImage"
-checksum=23f12423ae5ba35549f54a8a227e8bf5596d20e038a5d0fa9eccbf7aa03d4172
+distfiles="https://github.com/benjamimgois/goverlay/releases/download/${version}/${_appimage}"
+checksum=679d8d3fceeaae9aeb5af710becf99c958aa60da15d071bc3bc171cdaea97d3e
 nostrip=yes
 allow_unknown_shlibs=yes
 
 do_extract() {
-	local _appimage="${XBPS_SRCDISTDIR}/${pkgname}-${version}/goverlay_${_version}.AppImage"
-	chmod +x "$_appimage"
-	"$_appimage" --appimage-extract
+	local _path="${XBPS_SRCDISTDIR}/${pkgname}-${version}/${_appimage}"
+	chmod +x "$_path"
+	"$_path" --appimage-extract
 	cp -a squashfs-root/. .
 	rm -rf squashfs-root
 }
