@@ -1,0 +1,27 @@
+# Template file for 'whisper.cpp'
+pkgname=whisper.cpp
+version=1.9.1
+revision=1
+archs="x86_64"
+build_style=cmake
+configure_args="
+ -DBUILD_SHARED_LIBS=OFF
+ -DWHISPER_BUILD_TESTS=OFF
+ -DWHISPER_BUILD_EXAMPLES=ON
+ -DWHISPER_BUILD_SERVER=OFF
+ -DWHISPER_COMMON_FFMPEG=ON
+ -DWHISPER_CURL=ON"
+hostmakedepends="pkg-config"
+makedepends="ffmpeg6-devel libcurl-devel"
+short_desc="Port of OpenAI's Whisper speech recognition in C/C++"
+maintainer="creations <creations@creations.works>"
+license="MIT"
+homepage="https://github.com/ggml-org/whisper.cpp"
+distfiles="https://github.com/ggml-org/whisper.cpp/archive/refs/tags/v${version}.tar.gz"
+checksum=147267177eef7b22ec3d2476dd514d1b12e160e176230b740e3d1bd600118447
+
+do_install() {
+	vbin build/bin/whisper-cli
+	vinstall models/download-ggml-model.sh 755 usr/bin whisper-download-model
+	vlicense LICENSE
+}
