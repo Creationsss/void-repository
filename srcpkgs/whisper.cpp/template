@@ -1,7 +1,7 @@
 # Template file for 'whisper.cpp'
 pkgname=whisper.cpp
 version=1.9.1
-revision=1
+revision=2
 archs="x86_64"
 build_style=cmake
 configure_args="
@@ -10,9 +10,11 @@ configure_args="
  -DWHISPER_BUILD_EXAMPLES=ON
  -DWHISPER_BUILD_SERVER=OFF
  -DWHISPER_COMMON_FFMPEG=ON
- -DWHISPER_CURL=ON"
-hostmakedepends="pkg-config"
-makedepends="ffmpeg6-devel libcurl-devel"
+ -DWHISPER_CURL=ON
+ -DGGML_VULKAN=ON"
+hostmakedepends="pkg-config shaderc"
+makedepends="ffmpeg6-devel libcurl-devel vulkan-loader-devel
+ Vulkan-Headers SPIRV-Headers"
 short_desc="Port of OpenAI's Whisper speech recognition in C/C++"
 maintainer="creations <creations@creations.works>"
 license="MIT"
