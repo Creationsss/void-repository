@@ -1,6 +1,6 @@
 # Template file for 'audiocd-kio'
 pkgname=audiocd-kio
-version=26.04.2
+version=26.04.3
 revision=1
 _kde_project="multimedia/audiocd-kio"
 build_style=cmake
@@ -14,5 +14,5 @@ maintainer="creations <creations@creations.works>"
 license="GPL-2.0-or-later, LGPL-2.0-or-later, GFDL-1.2-or-later"
 homepage="https://invent.kde.org/multimedia/audiocd-kio"
 distfiles="https://download.kde.org/stable/release-service/${version}/src/audiocd-kio-${version}.tar.xz"
-checksum=53a6084d7c4aaf125e372c0ca5be0947483bcbd75c352b97fbd24cede36dc2d6
+checksum=ba8a6f27311ca14f8d1e1c2135fa925e1075c43c6463ea2f641b1af3de670430
 allow_unknown_shlibs=yes
