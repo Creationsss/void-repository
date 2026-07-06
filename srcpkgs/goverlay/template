@@ -1,9 +1,8 @@
 # Template file for 'goverlay'
 pkgname=goverlay
-version=1.8.4
+version=1.8.5
 revision=1
-_version="${version//./_}"
-_appimage="goverlay_${_version}_x8664.appimage"
+_appimage="goverlay-${version}-x86_64.AppImage"
 archs="x86_64"
 create_wrksrc=yes
 short_desc="Easy graphical interface to configure MangoHud, vkBasalt, and OptiScaler"
@@ -11,7 +10,7 @@ maintainer="creations <creations@creations.works>"
 license="GPL-3.0-or-later"
 homepage="https://github.com/benjamimgois/goverlay"
 distfiles="https://github.com/benjamimgois/goverlay/releases/download/${version}/${_appimage}"
-checksum=679d8d3fceeaae9aeb5af710becf99c958aa60da15d071bc3bc171cdaea97d3e
+checksum=ca76e92229c02fe786e8cce0d78f948fc0ae2cc29b1c659d6fa26a91d7f2e23c
 nostrip=yes
 allow_unknown_shlibs=yes
 
