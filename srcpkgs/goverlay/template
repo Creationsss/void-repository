@@ -1,7 +1,7 @@
 # Template file for 'goverlay'
 pkgname=goverlay
 version=1.8.5
-revision=1
+revision=2
 _appimage="goverlay-${version}-x86_64.AppImage"
 archs="x86_64"
 create_wrksrc=yes
