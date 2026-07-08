@@ -1,7 +1,7 @@
 # Template file for 'goverlay'
 pkgname=goverlay
 version=1.8.5
-revision=2
+revision=3
 _appimage="goverlay-${version}-x86_64.AppImage"
 archs="x86_64"
 create_wrksrc=yes
@@ -25,15 +25,18 @@ do_extract() {
 do_install() {
 	vmkdir usr/lib/goverlay
 	vcopy AppRun usr/lib/goverlay
+	vcopy AppRun.lib usr/lib/goverlay
+	vcopy AppRun.sh usr/lib/goverlay
 	vcopy bin usr/lib/goverlay
+	vcopy lib usr/lib/goverlay
 	vcopy shared usr/lib/goverlay
 	vcopy sharun usr/lib/goverlay
 	vcopy share usr/lib/goverlay
 	vcopy etc usr/lib/goverlay
 	chmod 755 ${DESTDIR}/usr/lib/goverlay/AppRun
+	chmod 755 ${DESTDIR}/usr/lib/goverlay/AppRun.sh
 	chmod 755 ${DESTDIR}/usr/lib/goverlay/sharun
 	chmod 755 ${DESTDIR}/usr/lib/goverlay/bin/goverlay
-	ln -sf shared/lib ${DESTDIR}/usr/lib/goverlay/lib
 	vbin ${FILESDIR}/goverlay.sh goverlay
 	vinstall ${FILESDIR}/goverlay.desktop 644 usr/share/applications
 	vinstall ${FILESDIR}/goverlay.png 644 usr/share/pixmaps
