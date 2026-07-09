@@ -2,7 +2,7 @@
 # Patched for asio 1.33+ compatibility (PR #1164)
 pkgname=websocketpp
 version=0.8.2
-revision=1
+revision=2
 build_style=cmake
 short_desc="C++/Boost Asio based websocket client/server library"
 maintainer="creations <creations@creations.works>"

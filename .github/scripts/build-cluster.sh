@@ -55,5 +55,6 @@ find hostdir/binpkgs -maxdepth 1 -name '*.xbps' -newer /tmp/build-start \
 ls /tmp/built-xbps | sed 's/^/  -> /'
 
 if [ -n "$failed" ]; then
-    echo "::warning::cluster $CLUSTER_NAME failed: $failed"
+    echo "::error::cluster $CLUSTER_NAME failed: $failed"
+    exit 1
 fi
