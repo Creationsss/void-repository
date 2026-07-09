@@ -3,6 +3,7 @@ pkgname=betterbird
 version=140.12.0esr
 _build=bb24
 _vcheck_repo="Betterbird/thunderbird-patches"
+_vcheck_ignore="[0-9]b[0-9]"
 revision=1
 archs="x86_64"
 depends="dbus-glib hunspell gtk+3 hicolor-icon-theme desktop-file-utils"

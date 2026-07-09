@@ -1,6 +1,6 @@
 # Template file for 'umu-launcher'
 pkgname=umu-launcher
-version=1.4.0
+version=1.4.1
 revision=1
 archs="x86_64"
 hostmakedepends="bash cargo python3-build python3-installer hatchling"
@@ -16,7 +16,7 @@ maintainer="creations <creations@creations.works>"
 license="GPL-3.0-only"
 homepage="https://github.com/Open-Wine-Components/umu-launcher"
 distfiles="https://github.com/Open-Wine-Components/umu-launcher/archive/refs/tags/${version}.tar.gz"
-checksum=22f74d496023a5d6cdbd7bcc4114220a61ab3da012f9be98eed5ca240c38abf6
+checksum=3fa918ed4de0f26c2eb83f3b5542c6133afa995d2a809482c93ee8908f82598e
 
 do_configure() {
 	bash ./configure.sh --prefix=/usr --use-system-pyzstd --use-system-urllib

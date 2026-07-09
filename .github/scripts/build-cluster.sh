@@ -38,7 +38,8 @@ for pkgname in $sorted; do
               hostdir/binpkgs/${pkgname}${suffix}-[0-9]*.xbps.sig2
     done
     echo ":: Building $pkgname..."
-    if ./xbps-src -j"$(nproc)" pkg "$pkgname"; then
+    ./xbps-src -j"$(nproc)" pkg "$pkgname" || true
+    if ls hostdir/binpkgs/${pkgname}-[0-9]*.xbps >/dev/null 2>&1; then
         echo ":: $pkgname built"
     else
         echo "::warning::Failed to build $pkgname (continuing)"

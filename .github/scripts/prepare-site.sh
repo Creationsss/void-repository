@@ -20,6 +20,7 @@ for pkg in "$GITHUB_WORKSPACE"/srcpkgs/*/; do
     kde_project="$(sed -n 's/^_kde_project="\(.*\)"/\1/p' "$pkg/template")"
     vcheck_repo="$(sed -n 's/^_vcheck_repo="\(.*\)"/\1/p' "$pkg/template")"
     vcheck_tag_prefix="$(sed -n 's/^_vcheck_tag_prefix="\(.*\)"/\1/p' "$pkg/template")"
+    vcheck_ignore="$(sed -n 's/^_vcheck_ignore="\(.*\)"/\1/p' "$pkg/template")"
     build="$(sed -n 's/^_build=//p' "$pkg/template")"
     check_ver="$ver"
     if [ -n "$build" ]; then
@@ -71,6 +72,9 @@ for pkg in "$GITHUB_WORKSPACE"/srcpkgs/*/; do
         attrs="data-repo='${repo}' data-version='${check_ver}' data-tag-prefix='${tag_prefix}' data-api='${api}'"
         if [ -n "$api_url" ]; then
             attrs="${attrs} data-api-url='${api_url}'"
+        fi
+        if [ -n "$vcheck_ignore" ]; then
+            attrs="${attrs} data-ignore='${vcheck_ignore}'"
         fi
     fi
 

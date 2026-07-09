@@ -250,6 +250,13 @@
 				var prefix = el.getAttribute("data-tag-prefix") || "";
 				var api = el.getAttribute("data-api") || "github";
 				var apiUrl = el.getAttribute("data-api-url") || "";
+				var ignoreStr = el.getAttribute("data-ignore") || "";
+				var ignoreRe = null;
+				if (ignoreStr) {
+					try {
+						ignoreRe = new RegExp(ignoreStr);
+					} catch (e) {}
+				}
 
 				if (api === "rolling") {
 					appendStatus(el, "rolling", "ver-ok");
@@ -258,7 +265,7 @@
 
 				if (!repo) return;
 
-				var cacheKey = api + ":" + repo + ":" + prefix;
+				var cacheKey = api + ":" + repo + ":" + prefix + ":" + ignoreStr;
 				if (cache[cacheKey]) {
 					showResult(el, current, cache[cacheKey]);
 					return;
@@ -327,6 +334,7 @@
 							for (var k = 0; k < data.length; k++) {
 								var t = data[k].name;
 								if (t && t.indexOf("/") !== -1) continue; // skip sub-product tags like "android/X.Y"
+								if (ignoreRe && t && ignoreRe.test(t)) continue;
 								if (!prefix || (t && t.indexOf(prefix) === 0)) {
 									tag = t;
 									break;
@@ -338,6 +346,12 @@
 							Array.isArray(data)
 						) {
 							for (var j = 0; j < data.length; j++) {
+								if (
+									ignoreRe &&
+									data[j].tag_name &&
+									ignoreRe.test(data[j].tag_name)
+								)
+									continue;
 								if (
 									data[j].tag_name &&
 									data[j].tag_name.indexOf(prefix) === 0
@@ -354,6 +368,8 @@
 									r.tag_name &&
 									r.tag_name.indexOf("/") !== -1
 								)
+									continue;
+								if (ignoreRe && r.tag_name && ignoreRe.test(r.tag_name))
 									continue;
 								tag = r.tag_name;
 								break;
