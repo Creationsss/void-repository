@@ -65,8 +65,8 @@ jobs:
                   main="$(echo "$main" | xargs)"
                   isolated="$(echo "$isolated" | xargs)"
                   if [ -n "$FILTER" ] && [ "$FILTER" != "__none__" ]; then
-                    new=""; for p in $isolated; do case " $FILTER " in *" $p "*) new="$new $p" ;; esac; done
-                    isolated="$(echo "$new" | xargs)"
+                    hit=0; for p in $isolated; do case " $FILTER " in *" $p "*) hit=1 ;; esac; done
+                    [ "$hit" -eq 1 ] || isolated=""
                     new=""; for p in $main; do case " $FILTER " in *" $p "*) new="$new $p" ;; esac; done
                     main="$(echo "$new" | xargs)"
                   elif [ "$FILTER" = "__none__" ]; then

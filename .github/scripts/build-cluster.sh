@@ -9,15 +9,7 @@ if [ "${BUILD_ONLY:-}" = "__none__" ]; then
     exit 0
 fi
 
-pkgs=""
-for p in $CLUSTER_PKGS; do
-    if [ -n "${BUILD_ONLY:-}" ]; then
-        case " $BUILD_ONLY " in *" $p "*) pkgs="$pkgs $p" ;; esac
-    else
-        pkgs="$pkgs $p"
-    fi
-done
-pkgs="$(echo "$pkgs" | xargs)"
+pkgs="$(echo "$CLUSTER_PKGS" | xargs)"
 
 if [ -z "$pkgs" ]; then
     echo ":: Nothing to build in cluster $CLUSTER_NAME"
