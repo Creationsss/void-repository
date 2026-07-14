@@ -38,9 +38,16 @@ for pkgname in $sorted; do
               hostdir/binpkgs/${pkgname}${suffix}-[0-9]*.xbps.sig2
     done
     echo ":: Building $pkgname..."
-    ./xbps-src -j"$(nproc)" pkg "$pkgname" || true
+    rc=0
+    ./xbps-src -j"$(nproc)" pkg "$pkgname" || rc=$?
     if ls hostdir/binpkgs/${pkgname}-[0-9]*.xbps >/dev/null 2>&1; then
         echo ":: $pkgname built"
+        if [ "$rc" -ne 0 ]; then
+            echo ":: Re-bootstrapping masterdir after nonzero exit..."
+            ./xbps-src zap
+            ./xbps-src binary-bootstrap
+            cp /usr/local/bin/bun masterdir-x86_64/usr/bin/bun
+        fi
     else
         echo "::warning::Failed to build $pkgname (continuing)"
         failed="$failed $pkgname"
