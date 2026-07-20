@@ -1,6 +1,6 @@
 # Template file for 'tidal-hifi'
 pkgname=tidal-hifi
-version=7.0.1
+version=8.0.0
 revision=1
 archs="x86_64"
 depends="gtk+3 nss libXtst alsa-lib hicolor-icon-theme desktop-file-utils"
@@ -9,7 +9,7 @@ maintainer="creations <creations@creations.works>"
 license="MIT"
 homepage="https://github.com/Mastermindzh/tidal-hifi"
 distfiles="https://github.com/Mastermindzh/tidal-hifi/releases/download/${version}/tidal-hifi-${version}.tar.gz"
-checksum=a9133f29ae10a4bc99e968f9b83dd79aab00b7ba51e607ccef2497131076fdbd
+checksum=a29998190df34a4c73196f134344063c209ff7e0615123f9a87b9005f916618f
 nostrip=yes
 allow_unknown_shlibs=yes
 
