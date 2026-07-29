@@ -1,0 +1,30 @@
+# Template file for 'gram'
+pkgname=gram
+version=3.2.0
+revision=1
+archs="x86_64"
+depends="vulkan-loader wayland fontconfig hicolor-icon-theme desktop-file-utils"
+short_desc="Gram - a fast, collaborative code editor (Zed fork)"
+maintainer="creations <creations@creations.works>"
+license="GPL-3.0-or-later, AGPL-3.0-or-later, Apache-2.0"
+homepage="https://codeberg.org/GramEditor/gram"
+distfiles="https://codeberg.org/GramEditor/gram/releases/download/${version}/gram-linux-x86_64-${version}.tar.gz"
+checksum=fd8ef9216d2aa9be49a8667c048f31775a149dcf207ce2123bbfccfd3c68f5af
+wrksrc="gram.app"
+nostrip=yes
+allow_unknown_shlibs=yes
+
+do_install() {
+	vmkdir usr/lib/gram
+	vcopy bin usr/lib/gram
+	vcopy lib usr/lib/gram
+	vcopy libexec usr/lib/gram
+
+	vbin ${FILESDIR}/gram.sh gram
+
+	vinstall share/applications/gram.desktop 644 usr/share/applications app.liten.Gram.desktop
+	vinstall share/icons/hicolor/scalable/apps/app.liten.Gram.svg 644 usr/share/icons/hicolor/scalable/apps
+	vinstall share/icons/hicolor/symbolic/apps/app.liten.Gram-symbolic.svg 644 usr/share/icons/hicolor/symbolic/apps
+
+	vlicense licenses.md
+}
