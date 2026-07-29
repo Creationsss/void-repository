@@ -52,6 +52,7 @@ jobs:
               env:
                   FILTER: ${{ steps.filter.outputs.build_only }}
               run: |
+                  groups='umu-launcher faugus-launcher;websocketpp obs-ws'
                   isolated="umu-launcher faugus-launcher"
                   main=""
                   for d in srcpkgs/*/; do
@@ -65,9 +66,20 @@ jobs:
                   main="$(echo "$main" | xargs)"
                   isolated="$(echo "$isolated" | xargs)"
                   if [ -n "$FILTER" ] && [ "$FILTER" != "__none__" ]; then
-                    hit=0; for p in $isolated; do case " $FILTER " in *" $p "*) hit=1 ;; esac; done
-                    [ "$hit" -eq 1 ] || isolated=""
-                    new=""; for p in $main; do case " $FILTER " in *" $p "*) new="$new $p" ;; esac; done
+                    sel=" $FILTER "
+                    oldIFS=$IFS; IFS=';'
+                    for g in $groups; do
+                      IFS=$oldIFS
+                      ghit=0; for m in $g; do case "$sel" in *" $m "*) ghit=1 ;; esac; done
+                      if [ "$ghit" -eq 1 ]; then
+                        for m in $g; do case "$sel" in *" $m "*) ;; *) sel="$sel$m " ;; esac; done
+                      fi
+                      IFS=';'
+                    done
+                    IFS=$oldIFS
+                    new=""; for p in $isolated; do case "$sel" in *" $p "*) new="$new $p" ;; esac; done
+                    isolated="$(echo "$new" | xargs)"
+                    new=""; for p in $main; do case "$sel" in *" $p "*) new="$new $p" ;; esac; done
                     main="$(echo "$new" | xargs)"
                   elif [ "$FILTER" = "__none__" ]; then
                     isolated=""; main=""
