@@ -1,6 +1,6 @@
 # Template file for 'goverlay'
 pkgname=goverlay
-version=1.8.10
+version=1.8.11
 revision=1
 _appimage="goverlay-${version}-x86_64.AppImage"
 archs="x86_64"
@@ -10,7 +10,7 @@ maintainer="creations <creations@creations.works>"
 license="GPL-3.0-or-later"
 homepage="https://github.com/benjamimgois/goverlay"
 distfiles="https://github.com/benjamimgois/goverlay/releases/download/${version}/${_appimage}"
-checksum=82caeab431fe0beb904d88f46c1c734617f6b6501978087faaadb6d4701c68e3
+checksum=f84959531e9d1815ba1211e7a94ec5e544d8ff32584ca45f25e16a6ccb0ad665
 nostrip=yes
 allow_unknown_shlibs=yes
 

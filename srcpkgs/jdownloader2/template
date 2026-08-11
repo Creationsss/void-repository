@@ -1,7 +1,7 @@
 # Template file for 'jdownloader2'
 pkgname=jdownloader2
 version=2.0
-revision=1
+revision=2
 depends="virtual?java-runtime hicolor-icon-theme libarchive libXi libXtst
  desktop-file-utils shared-mime-info"
 short_desc="Java-based download manager for one-click hosting sites"
