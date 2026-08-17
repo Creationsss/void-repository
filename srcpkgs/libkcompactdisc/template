@@ -3,6 +3,7 @@ pkgname=libkcompactdisc
 version=25.12.3
 revision=1
 _kde_project="multimedia/libkcompactdisc"
+_vcheck_ignore="\.[89][0-9]$"
 build_style=cmake
 hostmakedepends="extra-cmake-modules pkg-config gettext qt6-base-devel"
 makedepends="kf6-solid-devel kf6-ki18n-devel phonon-devel"

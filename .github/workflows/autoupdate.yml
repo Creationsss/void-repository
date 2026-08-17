@@ -1,0 +1,91 @@
+name: auto-update package versions
+
+on:
+    schedule:
+        - cron: "0 6 * * *"
+    workflow_dispatch:
+        inputs:
+            dry_run:
+                description: "resolve, bump and build-verify but do not open a pr"
+                type: boolean
+                default: true
+
+permissions:
+    contents: write
+    pull-requests: write
+
+concurrency:
+    group: autoupdate
+    cancel-in-progress: false
+
+jobs:
+    autoupdate:
+        runs-on: ubuntu-latest
+        container:
+            image: ghcr.io/void-linux/void-glibc-full:latest
+            options: --privileged
+        steps:
+            - name: install dependencies
+              run: |
+                  xbps-install -Syu -y
+                  xbps-install -y git xbps xtools base-devel curl unzip void-repo-multilib
+                  xbps-install -Sy -y gcc-multilib glibc-devel-32bit vulkan-loader-devel-32bit \
+                    MesaLib-devel-32bit libX11-devel-32bit libxcb-devel-32bit wayland-devel-32bit
+
+            - name: install bun
+              env:
+                  BUN_INSTALL: /usr/local
+              run: curl -fsSL https://bun.sh/install | bash
+
+            - name: checkout repo
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: clone void-packages
+              run: git clone --depth 1 https://github.com/void-linux/void-packages /void-packages
+
+            - name: copy srcpkgs into void-packages
+              run: |
+                  for pkg in srcpkgs/*/; do
+                    pkgname="$(basename "$pkg")"
+                    if [ -L "${pkg%/}" ]; then
+                      target="$(readlink "${pkg%/}")"
+                      ln -sf "$target" "/void-packages/srcpkgs/$pkgname"
+                    else
+                      cp -rT "$pkg" "/void-packages/srcpkgs/$pkgname"
+                    fi
+                  done
+
+            - name: bootstrap xbps-src
+              run: |
+                  cd /void-packages
+                  echo "XBPS_ALLOW_CHROOT_BREAKOUT=yes" >> etc/conf
+                  ./xbps-src binary-bootstrap
+                  cp /usr/local/bin/bun masterdir-x86_64/usr/bin/bun
+
+            - name: resolve, bump, and build-verify updates
+              env:
+                  VP: /void-packages
+                  REPO: ${{ github.workspace }}
+                  OUT: /tmp/autoupdate-result
+              run: sh "$GITHUB_WORKSPACE/.github/scripts/autoupdate.sh"
+
+            - name: summary of planned updates
+              if: ${{ !cancelled() }}
+              run: |
+                  echo "### auto-update results" >> "$GITHUB_STEP_SUMMARY"
+                  if [ -s /tmp/autoupdate-result ]; then
+                    while read -r n o nw; do
+                      echo "- \`$n\`: $o -> $nw" >> "$GITHUB_STEP_SUMMARY"
+                    done < /tmp/autoupdate-result
+                  else
+                    echo "_no updates_" >> "$GITHUB_STEP_SUMMARY"
+                  fi
+
+            - name: open or update pull request
+              if: ${{ github.event_name != 'workflow_dispatch' || inputs.dry_run == false }}
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  RESULT: /tmp/autoupdate-result
+              run: sh "$GITHUB_WORKSPACE/.github/scripts/open-pr.sh"

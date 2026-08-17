@@ -3,6 +3,7 @@ pkgname=audiocd-kio
 version=26.04.3
 revision=1
 _kde_project="multimedia/audiocd-kio"
+_vcheck_ignore="\.[89][0-9]$"
 build_style=cmake
 hostmakedepends="extra-cmake-modules pkg-config gettext qt6-base-devel kf6-kdoctools"
 makedepends="kf6-kio-devel kf6-ki18n-devel kf6-kconfig-devel kf6-kcmutils-devel

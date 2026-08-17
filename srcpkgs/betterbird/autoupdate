@@ -1,0 +1,24 @@
+#!/bin/sh
+set -u
+
+url="$(curl -fsS --max-time 30 \
+    "https://www.betterbird.eu/downloads/getloc.php?os=linux&lang=en-US&version=release" 2>/dev/null)" || exit 1
+
+f="${url##*/}"
+case "$f" in
+    betterbird-*.en-US.linux-x86_64.tar.xz) ;;
+    *) exit 1 ;;
+esac
+
+r="${f#betterbird-}"
+ver="${r%%-bb*}"
+build="bb${r#*-bb}"
+build="${build%%.*}"
+
+[ -n "$ver" ] && [ "$build" != "bb" ] || exit 1
+
+cur_build="$(sed -n 's/^_build=//p' "$TEMPLATE" | head -1)"
+[ "$ver" = "$CURRENT" ] && [ "$build" = "$cur_build" ] && exit 1
+
+sed -i "s/^_build=.*/_build=$build/" "$TEMPLATE"
+echo "$ver"
