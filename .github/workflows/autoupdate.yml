@@ -1,4 +1,4 @@
-name: auto-update package versions
+name: Auto-update package versions
 
 on:
     schedule:
@@ -38,7 +38,7 @@ jobs:
               run: curl -fsSL https://bun.sh/install | bash
 
             - name: checkout repo
-              uses: actions/checkout@v4
+              uses: actions/checkout@v5
               with:
                   fetch-depth: 0
 
@@ -76,8 +76,9 @@ jobs:
               run: |
                   echo "### auto-update results" >> "$GITHUB_STEP_SUMMARY"
                   if [ -s /tmp/autoupdate-result ]; then
-                    while read -r n o nw; do
-                      echo "- \`$n\`: $o -> $nw" >> "$GITHUB_STEP_SUMMARY"
+                    while read -r n o nw st; do
+                      [ "$st" = buildfail ] && st=" **build failed**" || st=""
+                      echo "- \`$n\`: $o -> $nw$st" >> "$GITHUB_STEP_SUMMARY"
                     done < /tmp/autoupdate-result
                   else
                     echo "_no updates_" >> "$GITHUB_STEP_SUMMARY"

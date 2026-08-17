@@ -10,11 +10,15 @@ API="https://api.github.com/repos/${GITHUB_REPOSITORY}"
 [ -s "$RESULT" ] || { echo ":: no updates, nothing to open"; exit 0; }
 
 title=""
-body="automated, build-verified version bumps.\\n\\n"
-while read -r name old new; do
+body=""
+while read -r name old new status; do
     [ -n "$name" ] || continue
     title="${title}[${name}]"
-    body="${body}- ${name}: ${old} -> ${new}\\n"
+    if [ "$status" = buildfail ]; then
+        body="${body}- ${name}: ${old} -> ${new}  (BUILD FAILED)\\n"
+    else
+        body="${body}- ${name}: ${old} -> ${new}\\n"
+    fi
 done < "$RESULT"
 
 cd "$WS"

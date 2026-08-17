@@ -96,6 +96,7 @@ for d in "$REPO"/srcpkgs/*/; do
     if [ "$(sed -n 's/^checksum=//p' "$t")" = "$(sed -n 's/^checksum=//p' "$t.orig")" ]; then
         echo "   distfile unchanged by version bump (commit-pinned?) -> skip"; revert "$t"; continue
     fi
+    status=ok
     if ! ./xbps-src -j"$J" pkg "$name" >/tmp/build-"$name".log 2>&1; then
         if grep -q '/void-packages/xbps-src' /tmp/build-"$name".log; then
             echo "   masterdir corrupted -> zap + rebootstrap + retry"
@@ -103,15 +104,17 @@ for d in "$REPO"/srcpkgs/*/; do
             ./xbps-src binary-bootstrap >/dev/null 2>&1 || true
             [ -x /usr/local/bin/bun ] && cp /usr/local/bin/bun masterdir-x86_64/usr/bin/bun 2>/dev/null || true
         fi
-        if ! ./xbps-src -j"$J" pkg "$name" >/tmp/build-"$name".log 2>&1; then
-            echo "   build failed -> revert (see /tmp/build-$name.log)"; revert "$t"; continue
-        fi
+        ./xbps-src -j"$J" pkg "$name" >/tmp/build-"$name".log 2>&1 || status=buildfail
     fi
 
     rm -f "$t.orig"
     cp -f "$t" "$REPO/srcpkgs/$name/template"
-    echo "$name ${cur}_${rev} ${new}_1" >> "$OUT"
-    echo "   ok: $name $cur -> $new"
+    echo "$name ${cur}_${rev} ${new}_1 $status" >> "$OUT"
+    if [ "$status" = ok ]; then
+        echo "   ok: $name $cur -> $new"
+    else
+        echo "   build failed (kept in pr for fixing, see /tmp/build-$name.log): $name $cur -> $new"
+    fi
     updated=$((updated + 1))
 done
 
