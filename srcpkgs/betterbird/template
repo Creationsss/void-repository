@@ -1,7 +1,7 @@
 # Template file for 'betterbird'
 pkgname=betterbird
-version=140.13.0esr
-_build=bb25
+version=153.1.0esr
+_build=bb7
 _vcheck_repo="Betterbird/thunderbird-patches"
 _vcheck_ignore="[0-9]b[0-9]"
 revision=1
@@ -12,7 +12,7 @@ maintainer="creations <creations@creations.works>"
 license="MPL-2.0"
 homepage="https://www.betterbird.eu"
 distfiles="https://www.betterbird.eu/downloads/LinuxArchive/${pkgname}-${version}-${_build}.en-US.linux-x86_64.tar.xz"
-checksum=d346c0c6c4f8dcde204f97f2d780d685530b9163d864bccd5c149456394ba1c0
+checksum=119083762fadba6b86681c0373f9ff5c11d87773e1422eed10756932c135307f
 nostrip=yes
 
 do_install() {
