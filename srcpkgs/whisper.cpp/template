@@ -1,6 +1,6 @@
 # Template file for 'whisper.cpp'
 pkgname=whisper.cpp
-version=1.9.2
+version=1.9.3
 revision=1
 archs="x86_64"
 build_style=cmake
@@ -20,7 +20,7 @@ maintainer="creations <creations@creations.works>"
 license="MIT"
 homepage="https://github.com/ggml-org/whisper.cpp"
 distfiles="https://github.com/ggml-org/whisper.cpp/archive/refs/tags/v${version}.tar.gz"
-checksum=a6abd064fcca8b85e794d205abf328c522e9451db43a3eadc178b883b7d0e9cd
+checksum=1650f884effba487025143bd8facd2f9fb40a83b3737a732803c67a8d659d9c0
 
 do_install() {
 	vbin build/bin/whisper-cli
