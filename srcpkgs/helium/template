@@ -1,6 +1,6 @@
 # Template file for 'helium'
 pkgname=helium
-version=0.15.5.1
+version=0.15.6.1
 revision=1
 archs="x86_64"
 depends="gtk+3 nss libXtst alsa-lib hicolor-icon-theme desktop-file-utils"
@@ -9,7 +9,7 @@ maintainer="creations <creations@creations.works>"
 license="GPL-3.0-or-later"
 homepage="https://github.com/imputnet/helium-linux"
 distfiles="https://github.com/imputnet/helium-linux/releases/download/${version}/helium-${version}-x86_64_linux.tar.xz"
-checksum=f34a1ee1a6ab2e3109d92e3939512a37cfe68a2f0d230b525cc1589fc192fd97
+checksum=4d5ce2e595b2bc5b21ea8be80615390d6d24df0950e7f8140c3e3eca40103d36
 wrksrc="helium-${version}-x86_64_linux"
 nostrip=yes
 
