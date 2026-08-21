@@ -1,0 +1,53 @@
+# Template file for 'hyprland'
+pkgname=hyprland
+version=0.56.2
+revision=1
+archs="x86_64"
+build_style=cmake
+configure_args="-DNO_SYSTEMD:BOOL=true -Dglaze_DIR:PATH=/usr/share/glaze"
+hostmakedepends="cmake cpio glslang hyprwayland-scanner hyprwire jq pkgconf python3 xxd libei-devel readline-devel"
+makedepends="aquamarine cairo-devel glaze glslang-devel hwids hyprcursor
+ hyprgraphics hyprlang hyprutils hyprwire lcms2-devel libdisplay-info-devel libdrm-devel
+ libgbm-devel libglvnd-devel libinput-devel libliftoff-devel libseat-devel
+ libxcb-devel libXcursor-devel libxkbcommon-devel lua55-devel muparser-devel pango-devel
+ re2-devel SPIRV-Tools-devel tomlplusplus-devel wayland-devel wayland-protocols
+ xcb-util-errors-devel xcb-util-renderutil-devel xcb-util-wm-devel xorg-server-xwayland"
+short_desc="Dynamic tiling Wayland compositor that doesn't sacrifice on its looks"
+maintainer="creations <creations@creations.works>"
+license="BSD-3-Clause"
+homepage="https://hyprland.org/"
+changelog="https://github.com/hyprwm/Hyprland/releases"
+distfiles="https://github.com/hyprwm/Hyprland/releases/download/v${version}/source-v${version}.tar.gz"
+checksum=03ad3f5ef152ff44116ffd56fcf808486211ecabf4f0ba567108ee746ba5cd2e
+make_check=no # cant run in sandbox
+
+pre_configure() {
+	xxd -i -n EXAMPLE_CONFIG_BYTES_LUA example/hyprland.lua > src/config/lua/example_config_lua_data.h
+	cp "${FILESDIR}/ranges-compat.hpp" "${wrksrc}/ranges-compat.hpp"
+	export CXXFLAGS="${CXXFLAGS:-} -include ${wrksrc}/ranges-compat.hpp"
+}
+
+post_install() {
+	# license
+	vlicense LICENSE
+
+	# headers
+	vmkdir usr/include/hyprland
+	vmkdir usr/include/hyprland/protocols
+	vmkdir usr/share/pkgconfig
+
+	cmake --build ./build --config Release --target generate-protocol-headers
+
+	find src -type f \( -name '*.hpp' -o -name '*.h' -o -name '*.inc' \) -print0 | cpio --quiet -0dump ${DESTDIR}/usr/include/hyprland
+	install -Dm0644 protocols/*.h* ${DESTDIR}/usr/include/hyprland/protocols
+	vinstall build/hyprland.pc 644 usr/share/pkgconfig
+}
+
+hyprland-devel_package() {
+	depends="${sourcepkg}>=${version}_${revision} cmake cpio hyprwayland-scanner git gcc meson pkgconf ${makedepends}"
+	short_desc="Dynamic tiling Wayland compositor - development files"
+	pkg_install() {
+		vmove usr/include
+		vmove usr/share/pkgconfig
+	}
+}
