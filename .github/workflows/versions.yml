@@ -1,0 +1,71 @@
+name: Update version index
+
+on:
+    schedule:
+        - cron: "0 */5 * * *"
+    workflow_dispatch:
+        inputs:
+            dry_run:
+                description: "check versions and show the report, but do not publish to R2"
+                type: boolean
+                default: true
+
+permissions:
+    contents: read
+
+concurrency:
+    group: versions
+    cancel-in-progress: true
+
+jobs:
+    versions:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repo
+              uses: actions/checkout@v5
+
+            - name: Resolve latest upstream versions
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  OUT: ${{ github.workspace }}/versions.json
+              run: sh "$GITHUB_WORKSPACE/.github/scripts/gen-versions.sh"
+
+            - name: Version report
+              if: ${{ !cancelled() }}
+              run: |
+                  V="$GITHUB_WORKSPACE/versions.json"
+                  {
+                    echo "### version index"
+                    echo ""
+                    echo "updates: $(jq '[.packages[]|select(.status=="update")]|length' "$V") · errors: $(jq '[.packages[]|select(.status=="error")]|length' "$V") · total: $(jq '.packages|length' "$V")"
+                    echo ""
+                    echo "| package | current | latest | status |"
+                    echo "| --- | --- | --- | --- |"
+                    jq -r '
+                      .packages | to_entries
+                      | sort_by(.value.status == "update" or .value.status == "error" | not)
+                      | .[] | "| \(.key) | \(.value.current) | \(.value.latest // "-") | \(.value.status) |"
+                    ' "$V"
+                  } >> "$GITHUB_STEP_SUMMARY"
+
+            - name: Bake versions into index.html
+              if: ${{ github.event_name != 'workflow_dispatch' || inputs.dry_run == false }}
+              env:
+                  VERSIONS: ${{ github.workspace }}/versions.json
+                  OUTDIR: ${{ github.workspace }}/site
+              run: sh "$GITHUB_WORKSPACE/.github/scripts/prepare-site.sh"
+
+            - name: Upload index and version feed to R2
+              if: ${{ github.event_name != 'workflow_dispatch' || inputs.dry_run == false }}
+              env:
+                  AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+                  AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+                  AWS_DEFAULT_REGION: auto
+                  R2_ENDPOINT_URL: ${{ secrets.R2_ENDPOINT_URL }}
+              run: |
+                  aws s3 cp "$GITHUB_WORKSPACE/site/index.html" s3://void-repo/index.html \
+                    --endpoint-url "$R2_ENDPOINT_URL" \
+                    --content-type text/html --cache-control "public, max-age=300"
+                  aws s3 cp "$GITHUB_WORKSPACE/versions.json" s3://void-repo/versions.json \
+                    --endpoint-url "$R2_ENDPOINT_URL" \
+                    --content-type application/json --cache-control "public, max-age=300"

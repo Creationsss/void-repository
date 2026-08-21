@@ -178,7 +178,7 @@ jobs:
             image: ghcr.io/void-linux/void-glibc-full:latest
         steps:
             - name: Install dependencies
-              run: xbps-install -Syu -y && xbps-install -y xbps xtools aws-cli
+              run: xbps-install -Syu -y && xbps-install -y xbps xtools aws-cli curl jq
 
             - uses: actions/checkout@v4
 
@@ -242,7 +242,15 @@ jobs:
                   path: /void-packages/hostdir/binpkgs
                   key: xbps-pkgs-v3-${{ github.run_id }}
 
+            - name: Resolve latest upstream versions
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  OUT: /void-packages/hostdir/binpkgs/versions.json
+              run: sh "$GITHUB_WORKSPACE/.github/scripts/gen-versions.sh"
+
             - name: Prepare site
+              env:
+                  VERSIONS: /void-packages/hostdir/binpkgs/versions.json
               run: sh "$GITHUB_WORKSPACE/.github/scripts/prepare-site.sh"
 
             - name: Upload to R2

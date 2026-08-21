@@ -4,12 +4,14 @@ set -u
 VP="${VP:-/void-packages}"
 REPO="${REPO:-$GITHUB_WORKSPACE}"
 OUT="${OUT:-/tmp/autoupdate-result}"
+VERSIONS="${VERSIONS:-/tmp/versions.json}"
 IGNORE_FILE="${IGNORE_FILE:-$REPO/.github/autoupdate-ignore}"
 J="$(nproc 2>/dev/null || echo 1)"
 
 : > "$OUT"
 [ -x "$VP/xbps-src" ] && [ -d "$VP/srcpkgs" ] || { echo "fatal: $VP is not a void-packages clone"; exit 2; }
 [ -d "$REPO/srcpkgs" ] || { echo "fatal: $REPO/srcpkgs missing"; exit 2; }
+[ -f "$VERSIONS" ] || { echo "fatal: $VERSIONS missing (run gen-versions.sh first)"; exit 2; }
 cd "$VP" || exit 2
 
 tmpl() { echo "$VP/srcpkgs/$1/template"; }
@@ -48,21 +50,7 @@ version_ignored() (
 
 revert() { mv "$1.orig" "$1"; }
 
-newest() {
-    timeout 90 ./xbps-src update-check "$1" 2>/dev/null \
-        | sed -n "s/.* -> $1-\(.*\)\$/\1/p" \
-        | { while IFS= read -r v; do version_ignored "$1" "$v" || echo "$v"; done; } \
-        | sort -V | tail -1
-}
-
-kde_newest() {
-    base="https://download.kde.org/stable/release-service"
-    for v in $(curl -fsS --max-time 30 "$base/" 2>/dev/null \
-        | grep -oE '[0-9]{2}\.[0-9]{2}\.[0-9]+' | sort -Vru); do
-        { [ "$(printf '%s\n%s\n' "$2" "$v" | sort -V | tail -1)" = "$v" ] && [ "$v" != "$2" ]; } || break
-        curl -fsIL --max-time 20 "$base/$v/src/$1-$v.tar.xz" >/dev/null 2>&1 && { echo "$v"; return; }
-    done
-}
+latest_for() { jq -r --arg n "$1" '.packages[$n] | select(.status=="update") | .latest // empty' "$VERSIONS" 2>/dev/null; }
 
 updated=0
 for d in "$REPO"/srcpkgs/*/; do
@@ -79,12 +67,10 @@ for d in "$REPO"/srcpkgs/*/; do
     if [ -f "$hook" ]; then
         new="$(TEMPLATE="$t" CURRENT="$cur" sh "$hook" 2>/dev/null)"
         [ -n "$new" ] || { rm -f "$t.orig"; continue; }
-    elif [ -n "$(field "$name" _kde_project)" ]; then
-        new="$(kde_newest "$name" "$cur")"
-        [ -n "$new" ] || { rm -f "$t.orig"; continue; }
     else
-        new="$(newest "$name")"
+        new="$(latest_for "$name")"
         { [ -n "$new" ] && [ "$new" != "$cur" ]; } || { rm -f "$t.orig"; continue; }
+        version_ignored "$name" "$new" && { rm -f "$t.orig"; continue; }
     fi
 
     echo ":: $name: $cur -> $new (trying)"

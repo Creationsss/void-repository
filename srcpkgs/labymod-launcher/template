@@ -15,7 +15,6 @@ distfiles="https://releases.r2.labymod.net/launcher/linux/x64/labymodlauncher_${
 checksum=48899a5802a45565eca4c24a1023ba9da7c13e0c98b3acae17f9f127e22b7b79
 nostrip=yes
 _vcheck_api="labymod"
-_vcheck_url="https://void-proxy.creations.works"
 allow_unknown_shlibs=yes
 
 do_extract() {

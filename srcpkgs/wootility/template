@@ -12,7 +12,6 @@ homepage="https://wooting.io/wootility"
 distfiles="https://api.wooting.io/public/wootility/download?os=linux&version=${version}>Wootility-${version}.AppImage"
 checksum=42a9247cb8b4b5e0c7e44d269b8867638da6b2013fcf5455d51978f93b7e4da4
 _vcheck_api="wooting"
-_vcheck_url="https://void-proxy.creations.works"
 nostrip=yes
 allow_unknown_shlibs=yes
 skip_extraction="Wootility-${version}.AppImage"
