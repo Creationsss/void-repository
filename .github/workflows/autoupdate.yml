@@ -57,6 +57,19 @@ jobs:
                     fi
                   done
 
+            - name: apply shlibs overrides
+              run: |
+                  SHLIBS=/void-packages/common/shlibs
+                  for f in extra/shlibs_remove extra/shlibs_append; do
+                    [ -f "$f" ] || continue
+                    while read -r so _; do
+                      [ -n "$so" ] || continue
+                      case "$so" in \#*) continue ;; esac
+                      sed -i "\\|^${so} |d" "$SHLIBS"
+                    done < "$f"
+                  done
+                  [ -f extra/shlibs_append ] && cat extra/shlibs_append >> "$SHLIBS"
+
             - name: bootstrap xbps-src
               run: |
                   cd /void-packages
