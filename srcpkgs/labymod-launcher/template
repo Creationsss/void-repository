@@ -8,6 +8,7 @@ depends="alsa-lib at-spi2-core cairo dbus expat glib gtk+3 libcups
  libdrm libgbm libsecret libX11 libxcb libXcomposite libXdamage libXext
  libXfixes libxkbcommon libXrandr nspr nss pango"
 short_desc="LabyMod Launcher for Minecraft"
+_category=Gaming
 maintainer="creations <creations@creations.works>"
 license="custom:Proprietary"
 homepage="https://www.labymod.net"

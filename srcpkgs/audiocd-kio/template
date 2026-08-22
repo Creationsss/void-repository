@@ -11,6 +11,7 @@ makedepends="kf6-kio-devel kf6-ki18n-devel kf6-kconfig-devel kf6-kcmutils-devel
  libcdparanoia-devel libflac-devel libvorbis-devel opus-devel lame-devel"
 depends="kf6-kio"
 short_desc="KIO worker for accessing audio CDs"
+_category=Libraries
 maintainer="creations <creations@creations.works>"
 license="GPL-2.0-or-later, LGPL-2.0-or-later, GFDL-1.2-or-later"
 homepage="https://invent.kde.org/multimedia/audiocd-kio"

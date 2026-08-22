@@ -6,6 +6,7 @@ archs="x86_64"
 create_wrksrc=yes
 depends="gtk+3 nss libXtst alsa-lib hicolor-icon-theme desktop-file-utils libayatana-appindicator"
 short_desc="Secure and free password manager - desktop client"
+_category=Apps
 maintainer="creations <creations@creations.works>"
 license="GPL-3.0-only"
 homepage="https://bitwarden.com"

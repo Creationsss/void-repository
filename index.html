@@ -5,6 +5,38 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>Void Repository</title>
 		<style>
+			:root {
+				--bg: #ffffff;
+				--fg: #1f2328;
+				--muted: #59636e;
+				--border: #d1d9e0;
+				--surface: #f6f8fa;
+				--surface-2: #eef1f4;
+				--accent: #0969da;
+				--upd-fg: #9a6700;
+				--upd-bg: #fff8c5;
+				--upd-bd: #eac54f;
+				--neu-fg: #59636e;
+				--neu-bd: #d1d9e0;
+				--mono: ui-monospace, "SFMono-Regular", "SF Mono", Menlo,
+					Consolas, monospace;
+			}
+			@media (prefers-color-scheme: dark) {
+				:root {
+					--bg: #0d1117;
+					--fg: #e6edf3;
+					--muted: #9198a1;
+					--border: #2a313c;
+					--surface: #161b22;
+					--surface-2: #1c2128;
+					--accent: #4493f8;
+					--upd-fg: #d29922;
+					--upd-bg: #34280f;
+					--upd-bd: #bb800966;
+					--neu-fg: #9198a1;
+					--neu-bd: #2a313c;
+				}
+			}
 			* {
 				margin: 0;
 				padding: 0;
@@ -14,150 +46,268 @@
 				font-family:
 					-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica,
 					Arial, sans-serif;
-				line-height: 1.6;
-				color: #24292f;
-				background: #fff;
+				line-height: 1.55;
+				color: var(--fg);
+				background: var(--bg);
 			}
 			.container {
-				max-width: 960px;
+				max-width: 900px;
 				margin: 0 auto;
-				padding: 3rem 1.5rem;
+				padding: 2.5rem 1.25rem 4rem;
 			}
 			h1 {
-				font-size: 1.4rem;
+				font-size: 1.5rem;
 				font-weight: 600;
-				padding-bottom: 0.6rem;
-				border-bottom: 1px solid #d0d7de;
-				margin-bottom: 0.4rem;
 			}
 			.subtitle {
-				color: #656d76;
-				font-size: 0.9rem;
-				margin-bottom: 1.5rem;
+				color: var(--muted);
+				font-size: 0.92rem;
+				margin: 0.2rem 0 2rem;
 			}
 			h2 {
-				font-size: 0.75rem;
+				font-size: 0.72rem;
 				font-weight: 600;
 				text-transform: uppercase;
-				letter-spacing: 0.05em;
-				color: #656d76;
-				margin-bottom: 0.4rem;
+				letter-spacing: 0.06em;
+				color: var(--muted);
 			}
 			.section {
-				margin-bottom: 1.5rem;
-			}
-			.cmd {
-				display: block;
-				font-family:
-					ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas,
-					monospace;
-				font-size: 0.85rem;
-				background: #f6f8fa;
-				border: 1px solid #d0d7de;
-				padding: 0.5rem 0.7rem;
-				margin-bottom: 0.4rem;
-				overflow-x: auto;
-				white-space: pre;
+				margin-bottom: 2rem;
 			}
 			.cmd-label {
 				display: block;
-				font-size: 0.8rem;
-				color: #656d76;
-				margin-bottom: 0.15rem;
+				font-size: 0.82rem;
+				color: var(--muted);
+				margin: 0.7rem 0 0.2rem;
+			}
+			.cmd-wrap {
+				position: relative;
+				display: flex;
+				align-items: stretch;
+			}
+			.cmd {
+				flex: 1;
+				min-width: 0;
+				font-family: var(--mono);
+				font-size: 0.83rem;
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-radius: 6px 0 0 6px;
+				border-right: none;
+				padding: 0.55rem 0.7rem;
+				overflow-x: auto;
+				white-space: pre;
+			}
+			.chip,
+			.copy {
+				font-family: inherit;
+				color: var(--muted);
+				background: var(--surface);
+				border: 1px solid var(--border);
+				cursor: pointer;
+			}
+			.copy {
+				display: flex;
+				align-items: flex-start;
+				justify-content: center;
+				font-size: 0.83rem;
+				line-height: 1.55;
+				border-radius: 0 6px 6px 0;
+				padding: 0.55rem 0.7rem;
+				white-space: nowrap;
+			}
+			.copy:hover {
+				background: var(--surface-2);
+				color: var(--fg);
+			}
+			.note {
+				font-size: 0.82rem;
+				color: var(--muted);
+				margin-top: 0.7rem;
 			}
 			a {
-				color: #0969da;
+				color: var(--accent);
 				text-decoration: none;
 			}
 			a:hover {
 				text-decoration: underline;
 			}
 			.source {
-				font-size: 0.85rem;
-				color: #656d76;
+				font-size: 0.86rem;
+				color: var(--muted);
+			}
+			.pkg-head {
+				display: flex;
+				align-items: baseline;
+				justify-content: space-between;
+				gap: 1rem;
+				margin-bottom: 0.6rem;
+			}
+			.summary {
+				font-size: 0.82rem;
+				color: var(--muted);
+			}
+			.summary b {
+				color: var(--upd-fg);
+				font-weight: 600;
+			}
+			.controls {
+				display: flex;
+				flex-wrap: wrap;
+				align-items: center;
+				gap: 0.5rem;
+				margin-bottom: 0.8rem;
+			}
+			.chips.hidden {
+				display: none;
 			}
 			#search {
-				display: block;
-				font-family:
-					ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas,
-					monospace;
+				flex: 1;
+				min-width: 180px;
+				font-family: var(--mono);
 				font-size: 0.85rem;
 				padding: 0.5rem 0.7rem;
-				border: 1px solid #d0d7de;
-				background: #f6f8fa;
+				border: 1px solid var(--border);
+				border-radius: 6px;
+				background: var(--surface);
 				color: inherit;
 				outline: none;
-				width: 100%;
-				margin-bottom: 0.4rem;
 			}
 			#search:focus {
-				border-color: #0969da;
+				border-color: var(--accent);
+			}
+			.chips {
+				display: flex;
+				gap: 0.4rem;
+			}
+			.chip {
+				display: inline-flex;
+				align-items: center;
+				font-size: 0.82rem;
+				border-radius: 6px;
+				padding: 0.4rem 0.75rem;
+			}
+			.chip:hover {
+				color: var(--fg);
+			}
+			.chip.active {
+				color: var(--fg);
+				border-color: var(--accent);
+				background: var(--surface-2);
+			}
+			.chip .n {
+				color: var(--muted);
 			}
 			#pkglist {
-				font-family:
-					ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas,
-					monospace;
-				font-size: 0.85rem;
-				line-height: 1.8;
-				overflow-x: auto;
+				border-radius: 8px;
+				overflow: hidden;
+				box-shadow: 0 0 0 1px var(--border);
+			}
+			.cat-head {
+				display: flex;
+				align-items: baseline;
+				gap: 0.4rem;
+				padding: 0.5rem 0.85rem;
+				background: var(--surface);
+				border-top: 1px solid var(--border);
+				font-size: 0.72rem;
+				font-weight: 600;
+				text-transform: uppercase;
+				letter-spacing: 0.06em;
+				color: var(--muted);
+			}
+			.cat-head .cat-n {
+				font-weight: 400;
+				color: var(--muted);
+				opacity: 0.7;
+			}
+			.cat-head.hidden {
+				display: none;
+			}
+			#pkglist > :first-child {
+				border-top: none;
 			}
 			.pkg {
-				display: block;
-				white-space: nowrap;
+				display: flex;
+				align-items: center;
+				gap: 0.75rem;
+				padding: 0.6rem 0.85rem;
+				border-top: 1px solid var(--border);
+			}
+			.cat-head + .pkg {
+				border-top: none;
+			}
+			.pkg.fv {
+				border-top: none;
+			}
+			.pkg:hover {
+				background: var(--surface);
 			}
 			.pkg.hidden {
 				display: none;
 			}
-			.ver-ok {
-				color: #1a7f37;
-				font-size: 0.8em;
+			.pkg-info {
+				flex: 1;
+				min-width: 0;
 			}
-			.ver-update {
-				color: #bf8700;
-				font-size: 0.8em;
+			.pkg-row {
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
 			}
-			.ver-error {
-				color: #656d76;
-				font-size: 0.8em;
+			.name {
+				font-weight: 600;
+				font-size: 0.95rem;
+				min-width: 0;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
 			}
-			@media (prefers-color-scheme: dark) {
-				body {
-					color: #c9d1d9;
-					background: #0d1117;
-				}
-				h1 {
-					border-bottom-color: #30363d;
-				}
-				.subtitle,
-				h2,
-				.cmd-label,
-				.source {
-					color: #8b949e;
-				}
-				.cmd {
-					background: #161b22;
-					border-color: #30363d;
-				}
-				a {
-					color: #58a6ff;
-				}
-				#search {
-					background: #161b22;
-					border-color: #30363d;
-					color: #c9d1d9;
-				}
-				#search:focus {
-					border-color: #58a6ff;
-				}
-				.ver-ok {
-					color: #3fb950;
-				}
-				.ver-update {
-					color: #d29922;
-				}
-				.ver-error {
-					color: #8b949e;
-				}
+			.ver {
+				font-family: var(--mono);
+				font-size: 0.8rem;
+				color: var(--muted);
+				flex-shrink: 0;
+			}
+			.dl {
+				font-family: var(--mono);
+				font-size: 0.78rem;
+				color: var(--muted);
+			}
+			.dl:empty {
+				display: none;
+			}
+			.dl:not(:empty) {
+				border: 1px solid var(--border);
+				border-radius: 5px;
+				padding: 0.05rem 0.35rem;
+			}
+			.desc {
+				font-size: 0.85rem;
+				color: var(--muted);
+				margin-top: 0.15rem;
+			}
+			.badge {
+				font-size: 0.72rem;
+				font-weight: 500;
+				line-height: 1.4;
+				padding: 0.1rem 0.5rem;
+				border-radius: 999px;
+				border: 1px solid var(--neu-bd);
+				color: var(--neu-fg);
+				white-space: nowrap;
+				flex-shrink: 0;
+			}
+			.badge.update {
+				color: var(--upd-fg);
+				background: var(--upd-bg);
+				border-color: var(--upd-bd);
+			}
+			.empty {
+				padding: 1.5rem;
+				text-align: center;
+				color: var(--muted);
+				font-size: 0.88rem;
 			}
 		</style>
 	</head>
@@ -170,51 +320,156 @@
 
 			<div class="section">
 				<h2>Setup</h2>
-				<span class="cmd-label">Add the repository:</span>
-				<code class="cmd">echo "repository=https://void.creations.works" | sudo tee /etc/xbps.d/creations.conf</code>
-				<span class="cmd-label">Install a package:</span>
-				<code class="cmd">sudo xbps-install -S &lt;package&gt;</code>
-				<span class="cmd-label">Update all packages:</span>
-				<code class="cmd">sudo xbps-install -Su</code>
-			</div>
-
-			<div class="section">
-				<p class="source">
-					Source:
-					<a href="https://github.com/Creationsss/void-repository"
-						>github.com/Creationsss/void-repository</a
-					>
+				<span class="cmd-label">Add the repository</span>
+				<div class="cmd-wrap">
+					<code class="cmd">echo "repository=https://void.creations.works" | sudo tee /etc/xbps.d/creations.conf</code>
+					<button class="copy">copy</button>
+				</div>
+				<span class="cmd-label">Install a package</span>
+				<div class="cmd-wrap">
+					<code class="cmd">sudo xbps-install -S &lt;package&gt;</code>
+					<button class="copy">copy</button>
+				</div>
+				<span class="cmd-label">Update everything</span>
+				<div class="cmd-wrap">
+					<code class="cmd">sudo xbps-install -Su</code>
+					<button class="copy">copy</button>
+				</div>
+				<p class="note">
+					The first time you install a package, xbps asks to import this repo's signing
+					key. Answer <b>Y</b> to trust it.
 				</p>
 			</div>
 
+			<div class="section source">
+				Source:
+				<a href="https://github.com/Creationsss/void-repository"
+					>github.com/Creationsss/void-repository</a
+				>
+			</div>
+
 			<div class="section">
-				<h2>Packages</h2>
-				<input
-					type="text"
-					id="search"
-					placeholder="search..."
-					autocomplete="off"
-				/>
+				<div class="pkg-head">
+					<h2>Packages</h2>
+					<span class="summary" id="summary"></span>
+				</div>
+				<div class="controls">
+					<input
+						type="text"
+						id="search"
+						placeholder="search packages&hellip;"
+						autocomplete="off"
+					/>
+					<div class="chips">
+						<button class="chip active" data-filter="all">
+							All
+						</button>
+						<button class="chip" data-filter="update">
+							Updates <span class="n" id="upd-n"></span>
+						</button>
+					</div>
+				</div>
 				<div id="pkglist">
 					<!-- PACKAGES -->
 				</div>
 			</div>
 		</div>
-	</body>
-	<script>
-		document
-			.getElementById("search")
-			.addEventListener("input", function () {
-				var q = this.value.toLowerCase();
-				var pkgs = document.querySelectorAll(".pkg");
-				for (var i = 0; i < pkgs.length; i++) {
-					pkgs[i].classList.toggle(
-						"hidden",
-						q &&
-							pkgs[i].textContent.toLowerCase().indexOf(q) === -1,
-					);
-				}
-			});
 
-	</script>
+		<script>
+			(function () {
+				var list = document.getElementById("pkglist");
+				var pkgs = [].slice.call(list.querySelectorAll(".pkg"));
+				var heads = [].slice.call(
+					list.querySelectorAll(".cat-head"),
+				);
+				var search = document.getElementById("search");
+				var chips = [].slice.call(document.querySelectorAll(".chip"));
+				var filter = "all";
+
+				var updates = pkgs.filter(function (p) {
+					return p.getAttribute("data-status") === "update";
+				}).length;
+				document.getElementById("summary").textContent =
+					pkgs.length + " packages";
+				if (updates) {
+					document.getElementById("upd-n").textContent =
+						"(" + updates + ")";
+				} else {
+					document
+						.querySelector(".chips")
+						.classList.add("hidden");
+				}
+
+				function apply() {
+					var q = search.value.toLowerCase();
+					var shown = 0;
+					var firstVisible = null;
+					var showHeaders = filter === "all" && !q;
+					heads.forEach(function (h) {
+						h.classList.toggle("hidden", !showHeaders);
+					});
+					pkgs.forEach(function (p) {
+						var okFilter =
+							filter === "all" ||
+							p.getAttribute("data-status") === filter;
+						var okSearch =
+							!q ||
+							p.textContent.toLowerCase().indexOf(q) !== -1;
+						var vis = okFilter && okSearch;
+						p.classList.toggle("hidden", !vis);
+						p.classList.remove("fv");
+						if (vis) {
+							shown++;
+							if (!firstVisible) firstVisible = p;
+						}
+					});
+					if (!showHeaders && firstVisible)
+						firstVisible.classList.add("fv");
+					var e = list.querySelector(".empty");
+					if (!shown && !e) {
+						e = document.createElement("div");
+						e.className = "empty";
+						e.textContent = "No matching packages.";
+						list.appendChild(e);
+					} else if (shown && e) {
+						e.remove();
+					}
+				}
+
+				search.addEventListener("input", apply);
+				chips.forEach(function (c) {
+					c.addEventListener("click", function () {
+						chips.forEach(function (x) {
+							x.classList.remove("active");
+						});
+						c.classList.add("active");
+						filter = c.getAttribute("data-filter");
+						apply();
+					});
+				});
+
+				[].slice
+					.call(document.querySelectorAll(".copy"))
+					.forEach(function (btn) {
+						btn.addEventListener("click", function () {
+							var code =
+								btn.parentNode.querySelector(".cmd")
+									.textContent;
+							navigator.clipboard.writeText(code).then(
+								function () {
+									var old = btn.textContent;
+									btn.textContent = "copied";
+									setTimeout(function () {
+										btn.textContent = old;
+									}, 1200);
+								},
+								function () {},
+							);
+						});
+					});
+
+				apply();
+			})();
+		</script>
+	</body>
 </html>

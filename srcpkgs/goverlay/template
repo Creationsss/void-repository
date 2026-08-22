@@ -6,6 +6,7 @@ _appimage="goverlay-${version}-x86_64.AppImage"
 archs="x86_64"
 create_wrksrc=yes
 short_desc="Easy graphical interface to configure MangoHud, vkBasalt, and OptiScaler"
+_category=Gaming
 maintainer="creations <creations@creations.works>"
 license="GPL-3.0-or-later"
 homepage="https://github.com/benjamimgois/goverlay"

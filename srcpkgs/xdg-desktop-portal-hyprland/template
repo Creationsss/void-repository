@@ -11,6 +11,7 @@ makedepends="elogind-devel hyprland-protocols hyprlang hyprutils
  qt6-base-devel qt6-wayland-devel sdbus-c++-devel wayland-devel"
 depends="xdg-desktop-portal"
 short_desc="Backend of xdg-desktop-portal for Hyprland"
+_category=Hyprland
 maintainer="creations <creations@creations.works>"
 license="BSD-3-Clause"
 homepage="https://github.com/hyprwm/xdg-desktop-portal-hyprland"

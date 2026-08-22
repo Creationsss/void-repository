@@ -2,6 +2,7 @@
 pkgname=whisper.cpp
 version=1.9.3
 revision=1
+_no_vcheck=yes
 archs="x86_64"
 build_style=cmake
 configure_args="
@@ -16,6 +17,7 @@ hostmakedepends="pkg-config shaderc"
 makedepends="ffmpeg6-devel libcurl-devel vulkan-loader-devel
  Vulkan-Headers SPIRV-Headers"
 short_desc="Port of OpenAI's Whisper speech recognition in C/C++"
+_category=Media
 maintainer="creations <creations@creations.works>"
 license="MIT"
 homepage="https://github.com/ggml-org/whisper.cpp"

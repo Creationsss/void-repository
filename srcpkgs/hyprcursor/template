@@ -8,6 +8,7 @@ configure_args="-DCMAKE_BUILD_TYPE:STRING=Release"
 hostmakedepends="pkgconf"
 makedepends="cairo-devel hyprlang librsvg-devel libzip-devel tomlplusplus-devel"
 short_desc="Hyprland cursor format, library and utilities"
+_category=Hyprland
 maintainer="creations <creations@creations.works>"
 license="BSD-3-Clause"
 homepage="https://github.com/hyprwm/hyprcursor"

@@ -8,6 +8,7 @@ configure_args="-DBUILD_TESTING=OFF"
 hostmakedepends="pkg-config"
 makedepends="pixman-devel"
 short_desc="Hyprland utilities library used across the ecosystem"
+_category=Hyprland
 maintainer="creations <creations@creations.works>"
 license="BSD-3-Clause"
 homepage="https://github.com/hyprwm/hyprutils"

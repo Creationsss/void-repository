@@ -6,6 +6,7 @@ _commit=6fbcf62
 archs="x86_64"
 create_wrksrc=yes
 short_desc="Open source RGB lighting control that doesn't depend on manufacturer software"
+_category=Peripherals
 maintainer="creations <creations@creations.works>"
 license="GPL-2.0-only"
 homepage="https://openrgb.org"

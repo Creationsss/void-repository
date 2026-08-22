@@ -84,6 +84,8 @@ for d in "$SRCDIR"/*/; do
 	fi
 
 	dist="$(sed -n '/^distfiles=/{s/^distfiles="//;s/"$//;p;q}' "$t")"
+	homepage="$(field "$t" homepage)"
+	dist="$(printf '%s' "$dist" | sed "s|\${pkgname}|${name}|g; s|\${homepage}|${homepage}|g")"
 	vcheck_repo="$(field "$t" _vcheck_repo)"
 	vcheck_tag_prefix="$(field "$t" _vcheck_tag_prefix)"
 	vcheck_ignore="$(field "$t" _vcheck_ignore)"

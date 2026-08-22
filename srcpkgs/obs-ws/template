@@ -27,6 +27,7 @@ makedepends="LuaJIT-devel fdk-aac-devel
  simde nv-codec-headers websocketpp asio qrcodegen"
 depends="xset xdg-desktop-portal"
 short_desc="Open Broadcaster Software - with WebSocket support"
+_category=Media
 maintainer="creations <creations@creations.works>"
 license="GPL-2.0-or-later"
 homepage="https://obsproject.com"

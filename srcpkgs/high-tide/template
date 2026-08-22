@@ -14,6 +14,7 @@ depends="python3-gobject python3-requests python3-six python3-dateutil
  gst-plugins-good1 gst-plugins-base1 glib-networking
  libadwaita libportal-gtk4 libsecret"
 short_desc="Libadwaita TIDAL client for Linux"
+_category=Media
 maintainer="creations <creations@creations.works>"
 license="GPL-3.0-or-later"
 homepage="https://github.com/Nokse22/high-tide"

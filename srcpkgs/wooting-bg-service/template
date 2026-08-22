@@ -5,6 +5,7 @@ revision=1
 archs="x86_64"
 create_wrksrc=yes
 short_desc="Wooting Background Service for keyboard features"
+_category=Peripherals
 maintainer="creations <creations@creations.works>"
 license="custom:Proprietary"
 homepage="https://wooting.io/wootility"

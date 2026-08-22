@@ -8,6 +8,7 @@ depends="python3 python3-gobject python3-requests python3-Pillow python3-vdf
  python3-psutil python3-dbus python3-icoextract
  gtk4 libadwaita libmanette hicolor-icon-theme desktop-file-utils"
 short_desc="Lightweight launcher for running Windows games via UMU-Launcher"
+_category=Gaming
 maintainer="creations <creations@creations.works>"
 license="MIT"
 homepage="https://github.com/Faugus/faugus-launcher"

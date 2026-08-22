@@ -7,6 +7,7 @@ build_style=cmake
 hostmakedepends="pkgconf"
 makedepends="hyprutils"
 short_desc="Official implementation library for the hypr config language"
+_category=Hyprland
 maintainer="creations <creations@creations.works>"
 license="LGPL-3.0-only"
 homepage="https://hyprland.org/hyprlang/index.html"

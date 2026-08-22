@@ -7,6 +7,7 @@ makedepends="json-c-devel libcurl-devel file-devel wayland-devel
  wayland-protocols cairo-devel libxkbcommon-devel basu-devel"
 depends="ffmpeg tesseract-ocr tesseract-ocr-eng"
 short_desc="Screenshot, screen recording, OCR, and uploader for wlroots Wayland"
+_category=Media
 maintainer="creations <creations@creations.works>"
 license="BSD-3-Clause"
 homepage="https://heliopolis.live/creations/grabit"

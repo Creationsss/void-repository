@@ -4,6 +4,7 @@ version=4.1
 revision=1
 create_wrksrc=yes
 short_desc="The Inter font family"
+_category=Libraries
 maintainer="creations <creations@creations.works>"
 license="OFL-1.1"
 homepage="https://rsms.me/inter/"

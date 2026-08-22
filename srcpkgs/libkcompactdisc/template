@@ -8,6 +8,7 @@ build_style=cmake
 hostmakedepends="extra-cmake-modules pkg-config gettext qt6-base-devel"
 makedepends="kf6-solid-devel kf6-ki18n-devel phonon-devel"
 short_desc="Library for interfacing with CDs"
+_category=Libraries
 maintainer="creations <creations@creations.works>"
 license="GPL-2.0-or-later, LGPL-2.0-or-later"
 homepage="https://invent.kde.org/multimedia/libkcompactdisc"

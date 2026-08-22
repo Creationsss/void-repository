@@ -12,6 +12,7 @@ depends="python3 python3-xlib python3-urllib3 python3-pyzstd python3-xxhash
  libX11-32bit libXScrnSaver-32bit alsa-plugins-32bit nss-32bit
  vulkan-loader-32bit mesa-32bit"
 short_desc="Unified Launcher for Windows Games on Linux (Proton runner)"
+_category=Gaming
 maintainer="creations <creations@creations.works>"
 license="GPL-3.0-only"
 homepage="https://github.com/Open-Wine-Components/umu-launcher"

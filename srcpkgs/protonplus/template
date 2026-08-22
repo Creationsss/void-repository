@@ -8,6 +8,7 @@ makedepends="gtk4-devel libadwaita-devel json-glib-devel libsoup3-devel libgee08
  SDL3-devel libnotify-devel cairo-devel AppStream-devel"
 depends="gtk4 libadwaita libgee08 json-glib libsoup3 libarchive SDL3 libnotify"
 short_desc="Modern compatibility tools manager for Linux gaming"
+_category=Gaming
 maintainer="creations <creations@creations.works>"
 license="GPL-3.0-or-later"
 homepage="https://github.com/Vysp3r/protonplus"

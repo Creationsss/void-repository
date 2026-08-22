@@ -8,6 +8,7 @@ makedepends="Vulkan-Headers vulkan-loader-devel MesaLib-devel obs-devel simde
  libX11-devel libxcb-devel wayland-devel wayland-protocols"
 depends="vulkan-loader obs"
 short_desc="OBS plugin for Vulkan/OpenGL game capture on Linux"
+_category=Media
 maintainer="creations <creations@creations.works>"
 license="GPL-2.0-or-later"
 homepage="https://github.com/nowrep/obs-vkcapture"

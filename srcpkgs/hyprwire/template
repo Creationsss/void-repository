@@ -8,6 +8,7 @@ configure_args="-DBUILD_TESTING:BOOL=OFF"
 hostmakedepends="pkgconf pugixml-devel"
 makedepends="hyprutils libffi-devel pugixml-devel"
 short_desc="A fast and consistent wire protocol for IPC"
+_category=Hyprland
 maintainer="creations <creations@creations.works>"
 license="BSD-3-Clause"
 homepage="https://github.com/hyprwm/hyprwire"

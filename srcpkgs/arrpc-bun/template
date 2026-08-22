@@ -4,6 +4,7 @@ version=1.4.0
 revision=1
 archs="x86_64"
 short_desc="TypeScript/Bun port of arRPC - Open Discord RPC server"
+_category=Discord
 maintainer="creations <creations@creations.works>"
 license="MIT"
 homepage="https://github.com/Creationsss/arrpc-bun"

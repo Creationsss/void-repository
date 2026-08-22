@@ -10,6 +10,7 @@ makedepends="Vulkan-Headers vulkan-loader-devel-32bit MesaLib-devel-32bit
  glibc-devel-32bit libX11-devel-32bit libxcb-devel-32bit wayland-devel-32bit"
 depends="vulkan-loader-32bit obs-vkcapture"
 short_desc="OBS Vulkan/OpenGL game capture - 32-bit layer"
+_category=Media
 maintainer="creations <creations@creations.works>"
 license="GPL-2.0-or-later"
 homepage="https://github.com/nowrep/obs-vkcapture"

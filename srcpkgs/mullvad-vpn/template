@@ -7,6 +7,7 @@ create_wrksrc=yes
 depends="gtk+3 nss libnotify alsa-lib dbus libnftnl iputils
  hicolor-icon-theme desktop-file-utils"
 short_desc="VPN client for secure and anonymous internet access"
+_category=Apps
 maintainer="creations <creations@creations.works>"
 license="GPL-3.0-or-later"
 homepage="https://mullvad.net"

@@ -1,0 +1,19 @@
+name = "void-repo"
+main = "index.js"
+compatibility_date = "2025-06-01"
+workers_dev = true
+
+routes = [
+  { pattern = "void.creations.works/*", zone_name = "creations.works" }
+]
+
+[vars]
+CF_ACCOUNT_ID = "5bf1bd7c96f75d8e6d876e98f87e12b0"
+
+[[r2_buckets]]
+binding = "REPO"
+bucket_name = "void-repo"
+
+[[analytics_engine_datasets]]
+binding = "ANALYTICS"
+dataset = "void_repo_hits"

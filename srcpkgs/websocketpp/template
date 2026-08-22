@@ -5,6 +5,7 @@ version=0.8.2
 revision=2
 build_style=cmake
 short_desc="C++/Boost Asio based websocket client/server library"
+_category=Libraries
 maintainer="creations <creations@creations.works>"
 license="BSD-3-Clause"
 homepage="https://www.zaphoyd.com/websocketpp"

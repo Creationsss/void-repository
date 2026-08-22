@@ -5,6 +5,7 @@ revision=1
 archs="x86_64"
 depends="vulkan-loader wayland fontconfig hicolor-icon-theme desktop-file-utils"
 short_desc="Gram - a fast, collaborative code editor (Zed fork)"
+_category=Apps
 maintainer="creations <creations@creations.works>"
 license="GPL-3.0-or-later, AGPL-3.0-or-later, Apache-2.0"
 homepage="https://codeberg.org/GramEditor/gram"

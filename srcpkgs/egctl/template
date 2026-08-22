@@ -5,6 +5,7 @@ revision=1
 archs="x86_64"
 depends="eudev"
 short_desc="CLI tool for configuring Endgame Gear OP1 8k v2 mouse via USB HID"
+_category=Peripherals
 maintainer="creations <creations@creations.works>"
 license="AGPL-3.0-or-later"
 homepage="https://heliopolis.live/creations/egctl"

@@ -6,6 +6,7 @@ archs="x86_64"
 create_wrksrc=yes
 depends="gtk+3 nss libXtst alsa-lib hicolor-icon-theme desktop-file-utils legendary-heroic"
 short_desc="Open source launcher for GOG, Epic Games and Amazon Games"
+_category=Gaming
 maintainer="creations <creations@creations.works>"
 license="GPL-3.0-or-later"
 homepage="https://heroicgameslauncher.com"

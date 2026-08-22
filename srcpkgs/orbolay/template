@@ -5,6 +5,7 @@ revision=1
 archs="x86_64"
 depends="libX11 libXtst libstdc++ fontconfig freetype libglvnd libxcb gtk+3"
 short_desc="Quick, small, native Discord overlay alternative"
+_category=Discord
 maintainer="creations <creations@creations.works>"
 license="GPL-3.0-or-later"
 homepage="https://github.com/SpikeHD/Orbolay"

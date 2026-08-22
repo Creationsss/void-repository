@@ -5,6 +5,7 @@ revision=3
 depends="virtual?java-runtime hicolor-icon-theme libarchive libXi libXtst
  desktop-file-utils shared-mime-info"
 short_desc="Java-based download manager for one-click hosting sites"
+_category=Apps
 maintainer="creations <creations@creations.works>"
 license="GPL-3.0-or-later, custom:JDownloader-EULA"
 homepage="https://jdownloader.org"

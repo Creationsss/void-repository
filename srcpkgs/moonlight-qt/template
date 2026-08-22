@@ -19,6 +19,7 @@ makedepends="SDL2-devel SDL2_ttf-devel opus-devel openssl-devel
  libcurl-devel alsa-lib-devel pulseaudio-devel"
 depends="qt6-svg qt6-declarative"
 short_desc="GameStream client for PC and Steam Link"
+_category=Gaming
 maintainer="creations <creations@creations.works>"
 license="GPL-3.0-or-later"
 homepage="https://github.com/moonlight-stream/moonlight-qt"

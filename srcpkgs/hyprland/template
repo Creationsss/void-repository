@@ -16,6 +16,7 @@ makedepends="aquamarine cairo-devel glaze glslang-devel hwids hyprcursor
  re2-devel SPIRV-Tools-devel tomlplusplus-devel wayland-devel wayland-protocols
  xcb-util-errors-devel xcb-util-renderutil-devel xcb-util-wm-devel xorg-server-xwayland"
 short_desc="Dynamic tiling Wayland compositor that doesn't sacrifice on its looks"
+_category=Hyprland
 maintainer="creations <creations@creations.works>"
 license="BSD-3-Clause"
 homepage="https://hyprland.org/"

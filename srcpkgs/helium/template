@@ -5,6 +5,7 @@ revision=1
 archs="x86_64"
 depends="gtk+3 nss libXtst alsa-lib hicolor-icon-theme desktop-file-utils"
 short_desc="Chromium-based Helium browser - portable Linux packaging"
+_category=Apps
 maintainer="creations <creations@creations.works>"
 license="GPL-3.0-or-later"
 homepage="https://github.com/imputnet/helium-linux"
