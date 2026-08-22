@@ -70,7 +70,7 @@ export default {
 							element(el) {
 								const p = el.getAttribute("data-pkg");
 								if (!p) return;
-								el.setInnerContent(`${counts[p] || 0}↓`);
+								el.setInnerContent(`${counts[p] || 0} dl`);
 							},
 						})
 						.transform(resp);

@@ -57,7 +57,7 @@ for pkg in "$WS"/srcpkgs/*/; do
     st="${meta%%$TAB*}"
     badge="${meta#*$TAB}"
 
-    row="<div class='pkg' data-pkg='${name}' data-status='${st}' data-cat='${cat}'><div class='pkg-info'><div class='pkg-row'><span class='dl' data-pkg='${name}'></span><span class='name'>${name}</span><span class='ver'>${ver}_${rev}</span></div><div class='desc'>${desc}</div></div>${badge}</div>"
+    row="<div class='pkg' data-pkg='${name}' data-status='${st}' data-cat='${cat}'><div class='pkg-info'><div class='pkg-row'><span class='name'>${name}</span><span class='ver'>${ver}_${rev}</span></div><div class='desc'>${desc}</div></div><span class='dl' data-pkg='${name}'></span>${badge}</div>"
     printf '%s\t%s\n' "$cat" "$row" >> "$ROWS"
 done
 
