@@ -1,10 +1,13 @@
 # Template file for 'hyprland'
 pkgname=hyprland
 version=0.56.2
-revision=1
+revision=2
 archs="x86_64"
 build_style=cmake
-configure_args="-DNO_SYSTEMD:BOOL=true -Dglaze_DIR:PATH=/usr/share/glaze"
+configure_args="-DNO_SYSTEMD:BOOL=true -Dglaze_DIR:PATH=/usr/share/glaze
+ -DCMAKE_EXE_LINKER_FLAGS=-Wl,--exclude-libs,liblua5.5.a
+ -DCMAKE_SHARED_LINKER_FLAGS=-Wl,--exclude-libs,liblua5.5.a
+ -DCMAKE_MODULE_LINKER_FLAGS=-Wl,--exclude-libs,liblua5.5.a"
 hostmakedepends="cmake cpio glslang hyprwayland-scanner hyprwire jq pkgconf python3 xxd libei-devel readline-devel"
 makedepends="aquamarine cairo-devel glaze glslang-devel hwids hyprcursor
  hyprgraphics hyprlang hyprutils hyprwire lcms2-devel libdisplay-info-devel libdrm-devel
@@ -25,6 +28,7 @@ pre_configure() {
 	xxd -i -n EXAMPLE_CONFIG_BYTES_LUA example/hyprland.lua > src/config/lua/example_config_lua_data.h
 	cp "${FILESDIR}/ranges-compat.hpp" "${wrksrc}/ranges-compat.hpp"
 	export CXXFLAGS="${CXXFLAGS:-} -include ${wrksrc}/ranges-compat.hpp"
+	sed -i '/pkg_search_module(LUA/a set_property(TARGET PkgConfig::LUA PROPERTY INTERFACE_LINK_LIBRARIES /usr/lib/liblua5.5.a m dl)' CMakeLists.txt
 }
 
 post_install() {
