@@ -1,6 +1,6 @@
 # Template file for 'gram'
 pkgname=gram
-version=3.2.0
+version=3.3.0
 revision=1
 archs="x86_64"
 depends="vulkan-loader wayland fontconfig hicolor-icon-theme desktop-file-utils"
@@ -10,7 +10,7 @@ maintainer="creations <creations@creations.works>"
 license="GPL-3.0-or-later, AGPL-3.0-or-later, Apache-2.0"
 homepage="https://codeberg.org/GramEditor/gram"
 distfiles="https://codeberg.org/GramEditor/gram/releases/download/${version}/gram-linux-x86_64-${version}.tar.gz"
-checksum=fd8ef9216d2aa9be49a8667c048f31775a149dcf207ce2123bbfccfd3c68f5af
+checksum=9b970939f45866bef819acddf9cf6744e3ad7de17037a3feeab1b0501ea9592e
 wrksrc="gram.app"
 nostrip=yes
 allow_unknown_shlibs=yes
