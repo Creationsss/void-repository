@@ -1,6 +1,6 @@
 # Template file for 'python3-requests-futures'
 pkgname=python3-requests-futures
-version=1.0.2
+version=1.1.0
 _vcheck_repo="ross/requests-futures"
 _vcheck_tag_prefix="v"
 revision=1
@@ -13,5 +13,5 @@ maintainer="creations <creations@creations.works>"
 license="Apache-2.0"
 homepage="https://github.com/ross/requests-futures"
 distfiles="${PYPI_SITE}/r/requests-futures/requests_futures-${version}.tar.gz"
-checksum=6b7eb57940336e800faebc3dab506360edec9478f7b22dc570858ad3aa7458da
+checksum=f839cf536e6638a6e0ca1cfd54ac761bf3bb2b5a7ecf9349557e53acc5244d36
 make_check=no
