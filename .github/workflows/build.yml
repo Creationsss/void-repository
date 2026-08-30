@@ -7,6 +7,7 @@ on:
 
 permissions:
     contents: read
+    issues: write
 
 concurrency:
     group: deploy
@@ -284,3 +285,25 @@ jobs:
                         [ -e "./$key" ] || aws s3 rm "s3://void-repo/$key" \
                           --endpoint-url "$R2_ENDPOINT_URL"
                       done
+
+    notify-failure:
+        needs: [discover, build, assemble]
+        if: failure()
+        runs-on: ubuntu-latest
+        steps:
+            - name: Open issue on build failure
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+                  SHA: ${{ github.sha }}
+              run: |
+                  title="build failed: ${SHA}"
+                  count="$(gh issue list --repo "$GITHUB_REPOSITORY" --state open \
+                    --search "$title in:title" --json title --jq 'length' 2>/dev/null || echo 0)"
+                  if [ "${count:-0}" -gt 0 ]; then
+                    echo "issue already open for $SHA"
+                    exit 0
+                  fi
+                  gh issue create --repo "$GITHUB_REPOSITORY" \
+                    --title "$title" \
+                    --body "The build/publish workflow failed for commit ${SHA}. Nothing was published to R2. Run: ${RUN_URL}"
