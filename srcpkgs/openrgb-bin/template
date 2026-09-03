@@ -1,8 +1,8 @@
 # Template file for 'openrgb-bin'
 pkgname=openrgb-bin
-version=1.0rc3
+version=1.0rc3.1
 revision=1
-_commit=6fbcf62
+_commit=5e81e26
 archs="x86_64"
 create_wrksrc=yes
 short_desc="Open source RGB lighting control that doesn't depend on manufacturer software"
@@ -12,8 +12,8 @@ license="GPL-2.0-only"
 homepage="https://openrgb.org"
 distfiles="https://codeberg.org/OpenRGB/OpenRGB/releases/download/release_candidate_${version}/OpenRGB_${version}_x86_64_${_commit}.AppImage
  https://codeberg.org/OpenRGB/OpenRGB/releases/download/release_candidate_${version}/60-openrgb.rules>60-openrgb.rules"
-checksum="37f25ecb9c0f52cd3b916d760c1df61a8b372c8b124115555200fe6dfe56f2a0
- cae379493ba85f69f864d5699f320f7db0546b733c4410a0aab7040b97b55bbf"
+checksum="42910311b364ae525ca593f53f5fadcf746b4de41e9e49302a5aa5dd614a608a
+ 0ebb492fd5f510fef964ab5a09a254586db864daedf3e9e012104c3c80644546"
 skip_extraction="60-openrgb.rules"
 nostrip=yes
 allow_unknown_shlibs=yes
