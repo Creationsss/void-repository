@@ -3,10 +3,12 @@ name: Build and publish XBPS packages
 on:
     push:
         branches: [main]
+    pull_request:
     workflow_dispatch:
 
 permissions:
     contents: read
+    issues: write
 
 concurrency:
     group: deploy
@@ -20,31 +22,55 @@ jobs:
             build_only: ${{ steps.filter.outputs.build_only }}
         steps:
             - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
 
             - name: Detect build filter
               id: filter
               env:
                   COMMIT_MSG: ${{ github.event.head_commit.message }}
+                  EVENT: ${{ github.event_name }}
+                  BASE_SHA: ${{ github.event.pull_request.base.sha }}
               run: |
-                  filter="$(printf '%s' "$COMMIT_MSG" | grep -oE '\[[^]]+\]' | sed 's/\[//;s/\]//' | grep -viE '^(skip ci|ci skip|no ci|skip actions|actions skip)$' | tr '\n' ' ' | xargs)"
-                  if [ -z "$filter" ]; then
-                    echo "build_only=" >> "$GITHUB_OUTPUT"
-                    echo ":: Building all packages"
-                  else
-                    valid=""
-                    for tok in $filter; do
-                      if [ -d "srcpkgs/$tok" ]; then
-                        valid="$valid $tok"
-                      fi
-                    done
-                    valid="$(echo "$valid" | xargs)"
-                    if [ -n "$valid" ]; then
-                      echo "build_only=$valid" >> "$GITHUB_OUTPUT"
-                      echo ":: Filter: $valid"
+                  set_out() { echo "build_only=$1" >> "$GITHUB_OUTPUT"; }
+
+                  # Pull requests: build-verify only the packages the PR changes.
+                  if [ "$EVENT" = "pull_request" ]; then
+                    changed="$(git diff --name-only "${BASE_SHA}...HEAD" 2>/dev/null \
+                      | sed -n 's#^srcpkgs/\([^/]*\)/.*#\1#p' | sort -u | tr '\n' ' ' | xargs)"
+                    if [ -n "$changed" ]; then
+                      set_out "$changed"; echo ":: PR check builds changed packages: $changed"
                     else
-                      echo "build_only=__none__" >> "$GITHUB_OUTPUT"
-                      echo "::warning::commit-message brackets present but no token matches a srcpkgs dir — nothing to build"
+                      set_out "__none__"; echo ":: PR changes no packages; nothing to build"
                     fi
+                    exit 0
+                  fi
+
+                  # push / manual: tokens from commit-message brackets.
+                  raw="$(printf '%s' "$COMMIT_MSG" | grep -oE '\[[^]]+\]' | sed 's/\[//;s/\]//' \
+                    | grep -viE '^(skip ci|ci skip|no ci|skip actions|actions skip)$')"
+
+                  # Full rebuild is opt-in only via [full rebuild] / [full-rebuild].
+                  if printf '%s\n' "$raw" | grep -qiE '^full[ -]rebuild$'; then
+                    set_out "__all__"; echo ":: Full rebuild requested"
+                    exit 0
+                  fi
+
+                  if [ -z "$raw" ]; then
+                    set_out "__none__"
+                    echo ":: no package tokens and no [full rebuild] — nothing to build"
+                    exit 0
+                  fi
+                  valid=""
+                  for tok in $raw; do
+                    [ -d "srcpkgs/$tok" ] && valid="$valid $tok"
+                  done
+                  valid="$(echo "$valid" | xargs)"
+                  if [ -n "$valid" ]; then
+                    set_out "$valid"; echo ":: Filter: $valid"
+                  else
+                    set_out "__none__"
+                    echo "::warning::brackets present but none match a srcpkgs dir — nothing to build"
                   fi
 
             - name: Build cluster manifest
@@ -65,7 +91,11 @@ jobs:
                   done
                   main="$(echo "$main" | xargs)"
                   isolated="$(echo "$isolated" | xargs)"
-                  if [ -n "$FILTER" ] && [ "$FILTER" != "__none__" ]; then
+                  if [ "$FILTER" = "__all__" ]; then
+                    : # build everything — keep the full isolated/main lists
+                  elif [ -z "$FILTER" ] || [ "$FILTER" = "__none__" ]; then
+                    isolated=""; main=""
+                  else
                     sel=" $FILTER "
                     oldIFS=$IFS; IFS=';'
                     for g in $groups; do
@@ -81,8 +111,6 @@ jobs:
                     isolated="$(echo "$new" | xargs)"
                     new=""; for p in $main; do case "$sel" in *" $p "*) new="$new $p" ;; esac; done
                     main="$(echo "$new" | xargs)"
-                  elif [ "$FILTER" = "__none__" ]; then
-                    isolated=""; main=""
                   fi
                   json="["; sep=""
                   [ -n "$isolated" ] && { json="${json}${sep}{\"name\":\"isolated\",\"pkgs\":\"$isolated\"}"; sep=","; }
@@ -186,7 +214,7 @@ jobs:
 
     assemble:
         needs: build
-        if: ${{ always() && !cancelled() }}
+        if: ${{ github.event_name == 'push' && success() }}
         runs-on: ubuntu-latest
         container:
             image: ghcr.io/void-linux/void-glibc-full:latest
@@ -284,3 +312,25 @@ jobs:
                         [ -e "./$key" ] || aws s3 rm "s3://void-repo/$key" \
                           --endpoint-url "$R2_ENDPOINT_URL"
                       done
+
+    notify-failure:
+        needs: [discover, build, assemble]
+        if: ${{ github.event_name == 'push' && failure() }}
+        runs-on: ubuntu-latest
+        steps:
+            - name: Open issue on build failure
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+                  SHA: ${{ github.sha }}
+              run: |
+                  title="build failed: ${SHA}"
+                  count="$(gh issue list --repo "$GITHUB_REPOSITORY" --state open \
+                    --search "$title in:title" --json title --jq 'length' 2>/dev/null || echo 0)"
+                  if [ "${count:-0}" -gt 0 ]; then
+                    echo "issue already open for $SHA"
+                    exit 0
+                  fi
+                  gh issue create --repo "$GITHUB_REPOSITORY" \
+                    --title "$title" \
+                    --body "The build/publish workflow failed for commit ${SHA}. Nothing was published to R2. Run: ${RUN_URL}"

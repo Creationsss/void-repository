@@ -6,13 +6,13 @@ on:
     workflow_dispatch:
         inputs:
             dry_run:
-                description: "resolve, bump and build-verify but do not open a pr"
+                description: "resolve, bump and build-verify but do not push or open issues"
                 type: boolean
                 default: true
 
 permissions:
     contents: write
-    pull-requests: write
+    issues: write
 
 concurrency:
     group: autoupdate
@@ -28,7 +28,7 @@ jobs:
             - name: install dependencies
               run: |
                   xbps-install -Syu -y
-                  xbps-install -y git xbps xtools base-devel curl jq unzip void-repo-multilib
+                  xbps-install -y git openssh xbps xtools base-devel curl jq unzip void-repo-multilib
                   xbps-install -Sy -y gcc-multilib glibc-devel-32bit vulkan-loader-devel-32bit \
                     MesaLib-devel-32bit libX11-devel-32bit libxcb-devel-32bit wayland-devel-32bit
 
@@ -104,9 +104,19 @@ jobs:
                     echo "_no updates_" >> "$GITHUB_STEP_SUMMARY"
                   fi
 
-            - name: open or update pull request
+            - name: set up deploy key
+              if: ${{ github.event_name != 'workflow_dispatch' || inputs.dry_run == false }}
+              env:
+                  DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+              run: |
+                  mkdir -p "$HOME/.ssh"
+                  printf '%s\n' "$DEPLOY_KEY" > "$HOME/.ssh/deploy_key"
+                  chmod 600 "$HOME/.ssh/deploy_key"
+
+            - name: push successful updates and open issues for failures
               if: ${{ github.event_name != 'workflow_dispatch' || inputs.dry_run == false }}
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   RESULT: /tmp/autoupdate-result
-              run: sh "$GITHUB_WORKSPACE/.github/scripts/open-pr.sh"
+                  LOGDIR: /tmp
+              run: sh "$GITHUB_WORKSPACE/.github/scripts/publish-updates.sh"
