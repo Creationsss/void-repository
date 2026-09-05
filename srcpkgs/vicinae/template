@@ -6,7 +6,7 @@ build_style=cmake
 configure_args="-DVICINAE_GIT_TAG=v${version} -DVICINAE_GIT_COMMIT_HASH=8113e08
  -DVICINAE_PROVENANCE=creations -DUSE_SYSTEM_GLAZE=ON"
 hostmakedepends="pkg-config git curl jq nodejs ninja qt6-tools qt6-shadertools"
-makedepends="qt6-base-devel qt6-declarative-devel qt6-svg-devel qt6-shadertools-devel
+makedepends="qt6-base-devel qt6-base-private-devel qt6-declarative-devel qt6-svg-devel qt6-shadertools-devel
  qt6-tools-devel layer-shell-qt-devel libqalculate-devel qtkeychain-qt6-devel
  kf6-syntax-highlighting-devel cmark-gfm-devel wayland-devel wayland-protocols glaze"
 depends="nodejs qt6-svg qt6-declarative layer-shell-qt libqalculate qtkeychain-qt6
