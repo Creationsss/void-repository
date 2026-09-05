@@ -1,6 +1,6 @@
 # Template file for 'protonplus'
 pkgname=protonplus
-version=0.6.5
+version=0.6.6
 revision=1
 build_style=meson
 hostmakedepends="meson pkg-config gettext vala glib-devel desktop-file-utils"
@@ -13,5 +13,5 @@ maintainer="creations <creations@creations.works>"
 license="GPL-3.0-or-later"
 homepage="https://github.com/Vysp3r/protonplus"
 distfiles="https://github.com/Vysp3r/protonplus/archive/refs/tags/v${version}.tar.gz"
-checksum=e0ece0fa3388c9fd72b617cabc8bc9e64846ccaa1e025aa94d83c1a94ca8a8a0
+checksum=55871a36c18dc783ad3273d281be897e24db55268747104ee21697a871d0cebd
 wrksrc="ProtonPlus-${version}"
