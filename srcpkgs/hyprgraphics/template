@@ -11,6 +11,7 @@ makedepends="cairo-devel pango-devel file-devel hyprutils
  libwebp-devel pixman-devel libglvnd-devel libdrm-devel"
 short_desc="Hyprland graphics resources and utilities"
 _category=Hyprland
+_rebuild_group=hypr
 maintainer="creations <creations@creations.works>"
 license="BSD-3-Clause"
 homepage="https://github.com/hyprwm/hyprgraphics"

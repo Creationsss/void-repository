@@ -12,6 +12,7 @@ makedepends="elogind-devel hyprland-protocols hyprlang hyprutils
 depends="xdg-desktop-portal"
 short_desc="Backend of xdg-desktop-portal for Hyprland"
 _category=Hyprland
+_rebuild_group=hypr
 maintainer="creations <creations@creations.works>"
 license="BSD-3-Clause"
 homepage="https://github.com/hyprwm/xdg-desktop-portal-hyprland"

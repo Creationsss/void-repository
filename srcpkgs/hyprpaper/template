@@ -8,6 +8,7 @@ makedepends="cairo-devel file-devel libjpeg-turbo-devel libwebp-devel
  hyprgraphics hyprutils hyprlang hyprtoolkit hyprwire pango-devel wlroots-devel"
 short_desc="Fast wallpaper utility for wlroots compositors with IPC controls"
 _category=Hyprland
+_rebuild_group=hypr
 maintainer="creations <creations@creations.works>"
 license="BSD-3-Clause"
 homepage="https://github.com/hyprwm/hyprpaper"

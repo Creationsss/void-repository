@@ -9,6 +9,7 @@ hostmakedepends="pkgconf pugixml-devel"
 makedepends="hyprutils libffi-devel pugixml-devel"
 short_desc="A fast and consistent wire protocol for IPC"
 _category=Hyprland
+_rebuild_group=hypr
 maintainer="creations <creations@creations.works>"
 license="BSD-3-Clause"
 homepage="https://github.com/hyprwm/hyprwire"

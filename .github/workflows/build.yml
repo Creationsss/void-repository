@@ -25,6 +25,43 @@ jobs:
               with:
                   fetch-depth: 0
 
+            - name: Guard rebuild groups
+              if: ${{ github.event_name == 'push' }}
+              env:
+                  BEFORE: ${{ github.event.before }}
+                  COMMIT_MSG: ${{ github.event.head_commit.message }}
+              run: |
+                  case "$COMMIT_MSG" in *"[skip group-check]"*) echo ":: rebuild-group check skipped"; exit 0 ;; esac
+
+                  if [ -n "$BEFORE" ] && [ "$BEFORE" != "0000000000000000000000000000000000000000" ] && git cat-file -e "$BEFORE" 2>/dev/null; then
+                    range="${BEFORE}..HEAD"
+                  else
+                    range="HEAD~1..HEAD"
+                  fi
+
+                  vr_changed() { git diff "$range" -- "srcpkgs/$1/template" 2>/dev/null | grep -qE '^[+-](version|revision)='; }
+
+                  grps=""
+                  for d in srcpkgs/*/; do
+                    [ -L "${d%/}" ] && continue
+                    g="$(sed -n 's/^_rebuild_group=//p' "${d}template" | head -1)"
+                    [ -n "$g" ] || continue
+                    vr_changed "$(basename "$d")" && case " $grps " in *" $g "*) ;; *) grps="$grps $g" ;; esac
+                  done
+
+                  rc=0
+                  for g in $grps; do
+                    missing=""
+                    for d in srcpkgs/*/; do
+                      [ -L "${d%/}" ] && continue
+                      n="$(basename "$d")"
+                      [ "$(sed -n 's/^_rebuild_group=//p' "${d}template" | head -1)" = "$g" ] || continue
+                      vr_changed "$n" || missing="$missing $n"
+                    done
+                    [ -n "$missing" ] && { echo "::error::rebuild group '$g' partially bumped; missing revision bump on:$missing (run: sh .github/scripts/revbump-group.sh $g, or add [skip group-check])"; rc=1; }
+                  done
+                  exit $rc
+
             - name: Detect build filter
               id: filter
               env:
@@ -34,10 +71,28 @@ jobs:
               run: |
                   set_out() { echo "build_only=$1" >> "$GITHUB_OUTPUT"; }
 
-                  # Pull requests: build-verify only the packages the PR changes.
+                  expand_groups() {
+                    sel=" $* "; grps=""
+                    for p in "$@"; do
+                      g="$(sed -n 's/^_rebuild_group=//p' "srcpkgs/$p/template" 2>/dev/null | head -1)"
+                      [ -n "$g" ] && case " $grps " in *" $g "*) ;; *) grps="$grps $g" ;; esac
+                    done
+                    [ -n "$grps" ] && for d in srcpkgs/*/; do
+                      [ -L "${d%/}" ] && continue
+                      mg="$(sed -n 's/^_rebuild_group=//p' "${d}template" 2>/dev/null | head -1)"
+                      [ -n "$mg" ] || continue
+                      case " $grps " in *" $mg "*)
+                        n="$(basename "$d")"
+                        case "$sel" in *" $n "*) ;; *) sel="$sel$n " ;; esac ;;
+                      esac
+                    done
+                    echo "$sel" | xargs
+                  }
+
                   if [ "$EVENT" = "pull_request" ]; then
                     changed="$(git diff --name-only "${BASE_SHA}...HEAD" 2>/dev/null \
                       | sed -n 's#^srcpkgs/\([^/]*\)/.*#\1#p' | sort -u | tr '\n' ' ' | xargs)"
+                    changed="$(expand_groups $changed)"
                     if [ -n "$changed" ]; then
                       set_out "$changed"; echo ":: PR check builds changed packages: $changed"
                     else
@@ -46,11 +101,9 @@ jobs:
                     exit 0
                   fi
 
-                  # push / manual: tokens from commit-message brackets.
                   raw="$(printf '%s' "$COMMIT_MSG" | grep -oE '\[[^]]+\]' | sed 's/\[//;s/\]//' \
                     | grep -viE '^(skip ci|ci skip|no ci|skip actions|actions skip)$')"
 
-                  # Full rebuild is opt-in only via [full rebuild] / [full-rebuild].
                   if printf '%s\n' "$raw" | grep -qiE '^full[ -]rebuild$'; then
                     set_out "__all__"; echo ":: Full rebuild requested"
                     exit 0
@@ -58,7 +111,7 @@ jobs:
 
                   if [ -z "$raw" ]; then
                     set_out "__none__"
-                    echo ":: no package tokens and no [full rebuild] — nothing to build"
+                    echo ":: no package tokens and no [full rebuild] - nothing to build"
                     exit 0
                   fi
                   valid=""
@@ -66,11 +119,12 @@ jobs:
                     [ -d "srcpkgs/$tok" ] && valid="$valid $tok"
                   done
                   valid="$(echo "$valid" | xargs)"
+                  valid="$(expand_groups $valid)"
                   if [ -n "$valid" ]; then
                     set_out "$valid"; echo ":: Filter: $valid"
                   else
                     set_out "__none__"
-                    echo "::warning::brackets present but none match a srcpkgs dir — nothing to build"
+                    echo "::warning::brackets present but none match a srcpkgs dir - nothing to build"
                   fi
 
             - name: Build cluster manifest
@@ -92,7 +146,7 @@ jobs:
                   main="$(echo "$main" | xargs)"
                   isolated="$(echo "$isolated" | xargs)"
                   if [ "$FILTER" = "__all__" ]; then
-                    : # build everything — keep the full isolated/main lists
+                    :
                   elif [ -z "$FILTER" ] || [ "$FILTER" = "__none__" ]; then
                     isolated=""; main=""
                   else
@@ -249,7 +303,7 @@ jobs:
                   if [ -d /tmp/cluster-artifacts ] && [ -n "$(ls -A /tmp/cluster-artifacts 2>/dev/null)" ]; then
                     cp -fv /tmp/cluster-artifacts/*.xbps /void-packages/hostdir/binpkgs/
                   else
-                    echo ":: No fresh cluster artifacts — assembling from cache only"
+                    echo ":: No fresh cluster artifacts - assembling from cache only"
                   fi
 
             - name: Remove cached packages no longer in srcpkgs

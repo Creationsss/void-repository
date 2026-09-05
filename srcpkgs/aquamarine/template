@@ -10,6 +10,7 @@ makedepends="hwids hyprutils libdisplay-info-devel libinput-devel
  libseat-devel MesaLib-devel pixman-devel wayland-devel wayland-protocols"
 short_desc="Aquamarine is a very light linux rendering backend library"
 _category=Hyprland
+_rebuild_group=hypr
 maintainer="creations <creations@creations.works>"
 license="LGPL-3.0-only"
 homepage="https://hyprland.org/hyprlang/index.html"
