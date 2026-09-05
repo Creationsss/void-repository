@@ -1,0 +1,20 @@
+# Template file for 'vicinae'
+pkgname=vicinae
+version=0.28.1
+revision=1
+build_style=cmake
+configure_args="-DVICINAE_GIT_TAG=v${version} -DVICINAE_GIT_COMMIT_HASH=8113e08
+ -DVICINAE_PROVENANCE=creations -DUSE_SYSTEM_GLAZE=ON"
+hostmakedepends="pkg-config git curl jq nodejs ninja qt6-tools qt6-shadertools"
+makedepends="qt6-base-devel qt6-declarative-devel qt6-svg-devel qt6-shadertools-devel
+ qt6-tools-devel layer-shell-qt-devel libqalculate-devel qtkeychain-qt6-devel
+ kf6-syntax-highlighting-devel cmark-gfm-devel wayland-devel wayland-protocols glaze"
+depends="nodejs qt6-svg qt6-declarative layer-shell-qt libqalculate qtkeychain-qt6
+ kf6-syntax-highlighting"
+short_desc="Focused launcher for your desktop - native, fast, extensible"
+_category=Apps
+maintainer="creations <creations@creations.works>"
+license="GPL-3.0-only"
+homepage="https://github.com/vicinaehq/vicinae"
+distfiles="https://github.com/vicinaehq/vicinae/archive/refs/tags/v${version}.tar.gz"
+checksum=9e187a1c0f95dbfe112f0f17413f6c788c597c1c3f9c165de53fe6967da1e39a
