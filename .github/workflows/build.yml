@@ -41,16 +41,14 @@ jobs:
 
                   vr_changed() { git diff "$range" -- "srcpkgs/$1/template" 2>/dev/null | grep -qE '^[+-](version|revision)='; }
 
-                  grps=""
-                  for d in srcpkgs/*/; do
-                    [ -L "${d%/}" ] && continue
-                    g="$(sed -n 's/^_rebuild_group=//p' "${d}template" | head -1)"
-                    [ -n "$g" ] || continue
-                    vr_changed "$(basename "$d")" && case " $grps " in *" $g "*) ;; *) grps="$grps $g" ;; esac
-                  done
+                  grps="$(git diff "$range" -- extra/shlibs_append 2>/dev/null \
+                    | sed -n 's/^[+-][^ ]* \([^ ]*\)-[^-]*_[0-9]*$/\1/p' | sort -u \
+                    | while read -r p; do sed -n 's/^_rebuild_group=//p' "srcpkgs/$p/template" 2>/dev/null | head -1; done \
+                    | sort -u)"
 
                   rc=0
                   for g in $grps; do
+                    [ -n "$g" ] || continue
                     missing=""
                     for d in srcpkgs/*/; do
                       [ -L "${d%/}" ] && continue
@@ -68,23 +66,23 @@ jobs:
                   COMMIT_MSG: ${{ github.event.head_commit.message }}
                   EVENT: ${{ github.event_name }}
                   BASE_SHA: ${{ github.event.pull_request.base.sha }}
+                  BEFORE: ${{ github.event.before }}
               run: |
                   set_out() { echo "build_only=$1" >> "$GITHUB_OUTPUT"; }
 
-                  expand_groups() {
-                    sel=" $* "; grps=""
-                    for p in "$@"; do
-                      g="$(sed -n 's/^_rebuild_group=//p' "srcpkgs/$p/template" 2>/dev/null | head -1)"
-                      [ -n "$g" ] && case " $grps " in *" $g "*) ;; *) grps="$grps $g" ;; esac
-                    done
-                    [ -n "$grps" ] && for d in srcpkgs/*/; do
-                      [ -L "${d%/}" ] && continue
-                      mg="$(sed -n 's/^_rebuild_group=//p' "${d}template" 2>/dev/null | head -1)"
-                      [ -n "$mg" ] || continue
-                      case " $grps " in *" $mg "*)
-                        n="$(basename "$d")"
-                        case "$sel" in *" $n "*) ;; *) sel="$sel$n " ;; esac ;;
-                      esac
+                  shlibs_expand() {
+                    r="$1"; shift; sel=" $* "
+                    grps="$(git diff "$r" -- extra/shlibs_append 2>/dev/null \
+                      | sed -n 's/^[+-][^ ]* \([^ ]*\)-[^-]*_[0-9]*$/\1/p' | sort -u \
+                      | while read -r p; do sed -n 's/^_rebuild_group=//p' "srcpkgs/$p/template" 2>/dev/null | head -1; done \
+                      | sort -u)"
+                    for g in $grps; do
+                      [ -n "$g" ] || continue
+                      for d in srcpkgs/*/; do
+                        [ -L "${d%/}" ] && continue
+                        [ "$(sed -n 's/^_rebuild_group=//p' "${d}template" | head -1)" = "$g" ] || continue
+                        n="$(basename "$d")"; case "$sel" in *" $n "*) ;; *) sel="$sel$n " ;; esac
+                      done
                     done
                     echo "$sel" | xargs
                   }
@@ -92,13 +90,19 @@ jobs:
                   if [ "$EVENT" = "pull_request" ]; then
                     changed="$(git diff --name-only "${BASE_SHA}...HEAD" 2>/dev/null \
                       | sed -n 's#^srcpkgs/\([^/]*\)/.*#\1#p' | sort -u | tr '\n' ' ' | xargs)"
-                    changed="$(expand_groups $changed)"
+                    changed="$(shlibs_expand "${BASE_SHA}...HEAD" $changed)"
                     if [ -n "$changed" ]; then
                       set_out "$changed"; echo ":: PR check builds changed packages: $changed"
                     else
                       set_out "__none__"; echo ":: PR changes no packages; nothing to build"
                     fi
                     exit 0
+                  fi
+
+                  if [ -n "$BEFORE" ] && [ "$BEFORE" != "0000000000000000000000000000000000000000" ] && git cat-file -e "$BEFORE" 2>/dev/null; then
+                    range="${BEFORE}..HEAD"
+                  else
+                    range="HEAD~1..HEAD"
                   fi
 
                   raw="$(printf '%s' "$COMMIT_MSG" | grep -oE '\[[^]]+\]' | sed 's/\[//;s/\]//' \
@@ -119,7 +123,7 @@ jobs:
                     [ -d "srcpkgs/$tok" ] && valid="$valid $tok"
                   done
                   valid="$(echo "$valid" | xargs)"
-                  valid="$(expand_groups $valid)"
+                  valid="$(shlibs_expand "$range" $valid)"
                   if [ -n "$valid" ]; then
                     set_out "$valid"; echo ":: Filter: $valid"
                   else
