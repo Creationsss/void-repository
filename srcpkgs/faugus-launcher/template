@@ -1,6 +1,6 @@
 # Template file for 'faugus-launcher'
 pkgname=faugus-launcher
-version=2.2.1
+version=2.2.2
 revision=1
 build_style=meson
 hostmakedepends="pkg-config gettext gtk-update-icon-cache python3-packaging-bootstrap"
@@ -13,7 +13,7 @@ maintainer="creations <creations@creations.works>"
 license="MIT"
 homepage="https://github.com/Faugus/faugus-launcher"
 distfiles="https://github.com/Faugus/faugus-launcher/archive/refs/tags/${version}.tar.gz"
-checksum=c04d5a97aaa6def91e4980f72958129b9704e5453c8b5b1e73c74a7496b958a2
+checksum=55209a870aa007a05ec334f9bcb7ee42231e1334fd7e127012b3aae70f0bfd1e
 
 post_install() {
 	vlicense LICENSE
