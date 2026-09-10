@@ -3,7 +3,7 @@ pkgname=hyprpaper
 version=0.8.4
 revision=2
 build_style=cmake
-CXXFLAGS="-I/usr/include/pixman-1"
+CXXFLAGS="-I/usr/include/pixman-1 -I/usr/include/libdrm"
 hostmakedepends="pkgconf hyprwayland-scanner hyprwire hyprland-protocols wayland-protocols"
 makedepends="cairo-devel file-devel libjpeg-turbo-devel libwebp-devel
  hyprgraphics hyprutils hyprlang hyprtoolkit hyprwire pango-devel pixman-devel wlroots-devel"

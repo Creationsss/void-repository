@@ -373,7 +373,7 @@ jobs:
 
     notify-failure:
         needs: [discover, build, assemble]
-        if: ${{ github.event_name == 'push' && failure() }}
+        if: ${{ github.event_name == 'push' && failure() && github.event.head_commit.author.email == '41898282+github-actions[bot]@users.noreply.github.com' }}
         runs-on: ubuntu-latest
         steps:
             - name: Open issue on build failure

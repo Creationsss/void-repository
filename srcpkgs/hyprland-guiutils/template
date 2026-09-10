@@ -3,7 +3,7 @@ pkgname=hyprland-guiutils
 version=0.2.2
 revision=3
 build_style=cmake
-CXXFLAGS="-I/usr/include/pixman-1"
+CXXFLAGS="-I/usr/include/pixman-1 -I/usr/include/libdrm"
 hostmakedepends="ninja pkgconf"
 makedepends="aquamarine cairo-devel hyprgraphics hyprlang
  hyprtoolkit hyprutils libdrm-devel pixman-devel libxkbcommon-devel"
