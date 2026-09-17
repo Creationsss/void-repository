@@ -1,7 +1,7 @@
 # Template file for 'hyprland-guiutils'
 pkgname=hyprland-guiutils
 version=0.2.2
-revision=3
+revision=4
 build_style=cmake
 CXXFLAGS="-I/usr/include/pixman-1 -I/usr/include/libdrm"
 hostmakedepends="ninja pkgconf"

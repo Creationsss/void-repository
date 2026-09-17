@@ -1,7 +1,7 @@
 # Template file for 'hyprutils'
 pkgname=hyprutils
 version=0.14.2
-revision=1
+revision=2
 archs="x86_64"
 build_style=cmake
 configure_args="-DBUILD_TESTING=OFF"
