@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=TeamSpeak 6
+Comment=Voice communication client
+Exec=teamspeak6 %u
+Icon=teamspeak6
+Terminal=false
+Type=Application
+Categories=Network;AudioVideo;
+StartupNotify=true
+MimeType=x-scheme-handler/ts3server;x-scheme-handler/teamspeak;

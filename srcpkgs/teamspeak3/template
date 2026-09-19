@@ -1,0 +1,38 @@
+# Template file for 'teamspeak3'
+pkgname=teamspeak3
+version=3.6.2
+revision=1
+archs="x86_64"
+create_wrksrc=yes
+depends="libICE libSM libX11 libXext fontconfig freetype glib libxcb
+ xcb-util-wm xcb-util-image xcb-util-keysyms xcb-util-renderutil
+ libxkbcommon libxkbcommon-x11"
+short_desc="TeamSpeak 3 voice communication client"
+_category=Apps
+_no_vcheck=yes
+maintainer="creations <creations@creations.works>"
+license="custom:TeamSpeak"
+homepage="https://www.teamspeak.com"
+distfiles="https://files.teamspeak-services.com/releases/client/${version}/TeamSpeak3-Client-linux_amd64-${version}.run"
+checksum=59f110438971a23f904a700e7dd0a811cf99d4e6b975ba3aa45962d43b006422
+nostrip=yes
+allow_unknown_shlibs=yes
+skip_extraction="TeamSpeak3-Client-linux_amd64-${version}.run"
+
+do_extract() {
+	local run="${XBPS_SRCDISTDIR}/${pkgname}-${version}/TeamSpeak3-Client-linux_amd64-${version}.run"
+	local skip offset
+	skip=$(sed -n 's/^skip="\([0-9]*\)"$/\1/p' "$run")
+	offset=$(head -n "$skip" "$run" | wc -c)
+	tail -c "+$((offset + 1))" "$run" | tar xz -C "${wrksrc}"
+}
+
+do_install() {
+	vmkdir opt/teamspeak3
+	vcopy "*" opt/teamspeak3
+
+	ln -s /opt/teamspeak3/ts3client_runscript.sh "${DESTDIR}/usr/bin/ts3client"
+
+	vinstall styles/default/logo-128x128.png 644 usr/share/pixmaps teamspeak3.png
+	vinstall "${FILESDIR}/teamspeak3.desktop" 644 usr/share/applications
+}

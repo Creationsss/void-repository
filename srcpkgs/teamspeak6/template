@@ -1,0 +1,34 @@
+# Template file for 'teamspeak6'
+pkgname=teamspeak6
+version=6.0.0beta4.1
+revision=1
+archs="x86_64"
+create_wrksrc=yes
+_relver=6.0.0-beta4.1
+depends="gtk+3 libX11 libXcomposite libXdamage libXext libXfixes libXrandr
+ libXrender libXScrnSaver libXtst alsa-lib atk at-spi2-atk at-spi2-core cairo
+ libcups dbus-libs libdrm expat libgbm libnotify nspr nss pango eudev-libudev
+ libuuid libatomic glib libxcb libxkbcommon"
+short_desc="TeamSpeak 6 voice communication client"
+_category=Apps
+_no_vcheck=yes
+maintainer="creations <creations@creations.works>"
+license="custom:TeamSpeak"
+homepage="https://www.teamspeak.com"
+distfiles="https://files.teamspeak-services.com/pre_releases/client/${_relver}/teamspeak-client.tar.gz>teamspeak6-${version}.tar.gz"
+checksum=edfd154102dae0683baa05cc55fa0f60f6b33d103db98797db9d63de61da48ba
+nostrip=yes
+allow_unknown_shlibs=yes
+
+do_install() {
+	vmkdir opt/teamspeak6
+	vcopy "*" opt/teamspeak6
+	chmod 4755 "${DESTDIR}/opt/teamspeak6/chrome-sandbox"
+
+	for px in 48 128 256; do
+		vinstall logo-${px}.png 644 usr/share/icons/hicolor/${px}x${px}/apps teamspeak6.png
+	done
+
+	vbin "${FILESDIR}/teamspeak6.sh" teamspeak6
+	vinstall "${FILESDIR}/teamspeak6.desktop" 644 usr/share/applications
+}

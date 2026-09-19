@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=TeamSpeak 3
+Comment=Voice communication client
+Exec=ts3client %u
+Icon=teamspeak3
+Terminal=false
+Type=Application
+Categories=Network;AudioVideo;
+StartupNotify=true
+MimeType=x-scheme-handler/ts3server;
