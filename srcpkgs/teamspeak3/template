@@ -25,12 +25,13 @@ do_extract() {
 	local skip offset
 	skip=$(sed -n 's/^skip="\([0-9]*\)"$/\1/p' "$run")
 	offset=$(head -n "$skip" "$run" | wc -c)
-	tail -c "+$((offset + 1))" "$run" | tar xz -C "${wrksrc}"
+	tail -c "+$((offset + 1))" "$run" | tar xzp -C "${wrksrc}"
 }
 
 do_install() {
 	vmkdir opt/teamspeak3
 	vcopy "*" opt/teamspeak3
+	find "${DESTDIR}/opt/teamspeak3" -perm -0002 -exec chmod o-w {} +
 
 	vmkdir usr/bin
 	ln -s /opt/teamspeak3/ts3client_runscript.sh "${DESTDIR}/usr/bin/ts3client"
