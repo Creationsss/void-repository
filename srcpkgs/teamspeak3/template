@@ -4,6 +4,7 @@ version=3.6.2
 revision=1
 archs="x86_64"
 create_wrksrc=yes
+hostmakedepends="tar"
 depends="libICE libSM libX11 libXext fontconfig freetype glib libxcb
  xcb-util-wm xcb-util-image xcb-util-keysyms xcb-util-renderutil
  libxkbcommon libxkbcommon-x11"
