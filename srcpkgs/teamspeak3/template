@@ -32,6 +32,7 @@ do_install() {
 	vmkdir opt/teamspeak3
 	vcopy "*" opt/teamspeak3
 
+	vmkdir usr/bin
 	ln -s /opt/teamspeak3/ts3client_runscript.sh "${DESTDIR}/usr/bin/ts3client"
 
 	vinstall styles/default/logo-128x128.png 644 usr/share/pixmaps teamspeak3.png
