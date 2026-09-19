@@ -106,7 +106,7 @@ jobs:
                   fi
 
                   raw="$(printf '%s' "$COMMIT_MSG" | grep -oE '\[[^]]+\]' | sed 's/\[//;s/\]//' \
-                    | grep -viE '^(skip ci|ci skip|no ci|skip actions|actions skip)$')"
+                    | grep -viE '^(skip ci|ci skip|no ci|skip actions|actions skip)$' || true)"
 
                   if printf '%s\n' "$raw" | grep -qiE '^full[ -]rebuild$'; then
                     set_out "__all__"; echo ":: Full rebuild requested"
