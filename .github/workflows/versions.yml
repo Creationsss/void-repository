@@ -14,8 +14,8 @@ permissions:
     contents: read
 
 concurrency:
-    group: versions
-    cancel-in-progress: true
+    group: autoupdate
+    cancel-in-progress: false
 
 jobs:
     versions:

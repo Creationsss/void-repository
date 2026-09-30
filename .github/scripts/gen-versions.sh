@@ -161,7 +161,8 @@ for d in "$SRCDIR"/*/; do
 				desktop-v*)
 					latest="$(gh "https://api.github.com/repos/${repo}/releases" 2>/dev/null \
 						| jq -r --arg p "$prefix" --arg ig "$vcheck_ignore" '
-							[.[].tag_name | select($ig=="" or (test($ig)|not))
+							[.[] | select(.prerelease|not) | .tag_name
+								| select($ig=="" or (test($ig)|not))
 								| select(startswith($p))][0] // empty' 2>/dev/null || true)"
 					;;
 				*)
