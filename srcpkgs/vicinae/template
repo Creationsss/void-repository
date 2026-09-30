@@ -1,6 +1,6 @@
 # Template file for 'vicinae'
 pkgname=vicinae
-version=0.29.0
+version=0.29.1
 revision=1
 build_style=cmake
 configure_args="-DVICINAE_GIT_TAG=v${version} -DVICINAE_GIT_COMMIT_HASH=8113e08
@@ -17,4 +17,4 @@ maintainer="creations <creations@creations.works>"
 license="GPL-3.0-only"
 homepage="https://github.com/vicinaehq/vicinae"
 distfiles="https://github.com/vicinaehq/vicinae/archive/refs/tags/v${version}.tar.gz"
-checksum=826b226844c66ea2fa97fdf8eb580d8c8e08533c699ffa0c361cc2d171625dd3
+checksum=ca79782e7c94faa9da1bd12ba1a361cea41970db781447773acb9a580a47cea8
