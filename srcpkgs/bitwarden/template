@@ -1,6 +1,6 @@
 # Template file for 'bitwarden'
 pkgname=bitwarden
-version=2026.9.0
+version=2026.9.1
 revision=1
 archs="x86_64"
 create_wrksrc=yes
@@ -11,7 +11,7 @@ maintainer="creations <creations@creations.works>"
 license="GPL-3.0-only"
 homepage="https://bitwarden.com"
 distfiles="https://github.com/bitwarden/clients/releases/download/desktop-v${version}/bitwarden_${version}_x64.tar.gz"
-checksum=a977a7a601aee511a8d6aaff439352c874e28115b894d9c745a4b16f491330ce
+checksum=b2af0290cf79d2e4ac91715d14793c7928e228790fe95b8c727e56262f288233
 nostrip=yes
 
 do_install() {
