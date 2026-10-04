@@ -1,12 +1,12 @@
 # Template file for 'moonlight-qt'
 pkgname=moonlight-qt
-version=6.1.0
+version=6.2.0
 revision=1
-_common_commit=8599b6042a4ba27749b0f94134dd614b4328a9bc
-_qmdns_commit=b7a5a9f225d5e14b39f9fd1f905c4f505cf2ee99
-_h264bs_commit=34f3c58afa3c47b6cf0a49308a68cbf89c5e0bff
-_enet_commit=bbf71856bb144729af4ed08af6bc2f5826a96db5
-_gamecontrollerdb_commit=e5a5fa2ac6e645d72c619ea99520a3a4586ee005
+_common_commit=f900dd4767759c7b9d0e93bcea666b55c69ea62f
+_qmdns_commit=920c097ffa742e2968290f15d4dde6693aec02e5
+_enet_commit=aca87840b57f045a1f7f9299e4b1b9b8e2a5e2f1
+_nanors_commit=b1e3c22ca0cdc0bb83e3cd6ed1a2fc77869ed99a
+_gamecontrollerdb_commit=8d9fefd7b810f2541f78cc7a8ccbd185bc84c7a5
 archs="x86_64"
 build_wrksrc="moonlight-qt-${version}"
 build_style=qmake
@@ -26,29 +26,28 @@ homepage="https://github.com/moonlight-stream/moonlight-qt"
 distfiles="https://github.com/moonlight-stream/moonlight-qt/archive/refs/tags/v${version}.tar.gz
  https://github.com/moonlight-stream/moonlight-common-c/archive/${_common_commit}.tar.gz
  https://github.com/cgutman/qmdnsengine/archive/${_qmdns_commit}.tar.gz
- https://github.com/aizvorski/h264bitstream/archive/${_h264bs_commit}.tar.gz
  https://github.com/cgutman/enet/archive/${_enet_commit}.tar.gz
+ https://github.com/sleepybishop/nanors/archive/${_nanors_commit}.tar.gz
  https://github.com/gabomdq/SDL_GameControllerDB/archive/${_gamecontrollerdb_commit}.tar.gz"
-checksum="da41de33363cdbe9d9b04d4eab26ee6121d5aae11c052faaed9dccf07a8b1270
- 1d62bdcd81e77b8bf6dc804c7402685e806dbcc999240857bbaf62790b24fdbc
- 051b4197dbb69b014d0f11ec923180724db5dbee2e966fb314ba7c44313f3bec
- 04fdcd690de01fa29221f65431f93dc156db146dbaf9e0c27346f3e0cee1a193
- b55531ba56bfad5bb7bef606d4ea4868cc50e1e38cc4778bdec23edd4ee5c2ab
- 8a36b5dd4f2b0e577632c4202a77c678543576de99b975866a7c15e8e8fc2b9c"
+checksum="921b6a61251435732c9593151829ed1f88ae7d9fc3d1aa46ea0bef87d1005dc2
+ be204cebb6687acd2d65dab548ea6d9c8d60bd277984ef49719bad5cbc0385db
+ f12236ff3ebce99adb083434756ca17aaf845f11248d2eeb9e68c530304e0299
+ 6bb1a151e6d21e1756baeff5a95eaf85a5b6731aeda6d0bc255651192ba4a32d
+ 41edc0309b255b0eeb5e8eb1ad79f7c7e9e6c31db1bd79a16d73271c62867003
+ e260456d9c7bdff5f2f8a0db0f772316b44d3e4f7833f72ff8328e95b30eb0ec"
 
 post_extract() {
-	# submodules are nested: wrapper/submodule (e.g. moonlight-common-c/moonlight-common-c/)
 	rm -rf ${build_wrksrc}/moonlight-common-c/moonlight-common-c
 	mv moonlight-common-c-${_common_commit} ${build_wrksrc}/moonlight-common-c/moonlight-common-c
 
 	rm -rf ${build_wrksrc}/qmdnsengine/qmdnsengine
 	mv qmdnsengine-${_qmdns_commit} ${build_wrksrc}/qmdnsengine/qmdnsengine
 
-	rm -rf ${build_wrksrc}/h264bitstream/h264bitstream
-	mv h264bitstream-${_h264bs_commit} ${build_wrksrc}/h264bitstream/h264bitstream
-
 	rm -rf ${build_wrksrc}/moonlight-common-c/moonlight-common-c/enet
 	mv enet-${_enet_commit} ${build_wrksrc}/moonlight-common-c/moonlight-common-c/enet
+
+	rm -rf ${build_wrksrc}/moonlight-common-c/moonlight-common-c/nanors
+	mv nanors-${_nanors_commit} ${build_wrksrc}/moonlight-common-c/moonlight-common-c/nanors
 
 	rm -rf ${build_wrksrc}/app/SDL_GameControllerDB
 	mv SDL_GameControllerDB-${_gamecontrollerdb_commit} ${build_wrksrc}/app/SDL_GameControllerDB
