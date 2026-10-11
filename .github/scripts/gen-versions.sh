@@ -120,6 +120,7 @@ for d in "$SRCDIR"/*/; do
 
 	case "$dist" in
 		*release_candidate_'${version}'*|*"release_candidate_${ver}"*) prefix="release_candidate_" ;;
+		*release_'${version}'*|*"release_${ver}"*) prefix="release_" ;;
 		*desktop-v'${version}'*|*"desktop-v${ver}"*) prefix="desktop-v" ;;
 		*v'${version}'*|*"v${ver}"*|*tags/v*) [ -z "$prefix" ] && prefix="v" ;;
 	esac

@@ -1,8 +1,8 @@
 # Template file for 'openrgb-bin'
 pkgname=openrgb-bin
-version=1.0rc3.1
+version=1.0
 revision=1
-_commit=5e81e26
+_commit=81bbe18
 archs="x86_64"
 create_wrksrc=yes
 short_desc="Open source RGB lighting control that doesn't depend on manufacturer software"
@@ -10,11 +10,11 @@ _category=Peripherals
 maintainer="creations <creations@creations.works>"
 license="GPL-2.0-only"
 homepage="https://openrgb.org"
-distfiles="https://codeberg.org/OpenRGB/OpenRGB/releases/download/release_candidate_${version}/OpenRGB_${version}_x86_64_${_commit}.AppImage
- https://codeberg.org/OpenRGB/OpenRGB/releases/download/release_candidate_${version}/60-openrgb.rules>60-openrgb.rules"
-checksum="42910311b364ae525ca593f53f5fadcf746b4de41e9e49302a5aa5dd614a608a
- 0ebb492fd5f510fef964ab5a09a254586db864daedf3e9e012104c3c80644546"
-skip_extraction="60-openrgb.rules"
+distfiles="https://codeberg.org/OpenRGB/OpenRGB/releases/download/release_${version}/OpenRGB_${version}_x86_64_${_commit}.AppImage
+ https://codeberg.org/OpenRGB/OpenRGB/releases/download/release_${version}/openrgb_${version}_amd64_trixie_${_commit}.deb"
+checksum="a77d9fea9ab1e59e5ec2b5cec4ab22d50f0433594c4e83eb13de4e5c3cfadebf
+ 51f8b4f5260207569fdeda9e1b9dd0bd2d02af2b30e068f7c79471e7f53e36f8"
+skip_extraction="openrgb_${version}_amd64_trixie_${_commit}.deb"
 nostrip=yes
 allow_unknown_shlibs=yes
 
@@ -47,8 +47,9 @@ do_install() {
 	vinstall usr/share/icons/hicolor/128x128/apps/org.openrgb.OpenRGB.png 644 \
 		usr/share/pixmaps openrgb.png
 
-	vinstall "${XBPS_SRCDISTDIR}/${pkgname}-${version}/60-openrgb.rules" 644 \
-		usr/lib/udev/rules.d
+	bsdtar -xOf "${XBPS_SRCDISTDIR}/${pkgname}-${version}/openrgb_${version}_amd64_trixie_${_commit}.deb" data.tar.xz \
+		| bsdtar -xf - ./usr/lib/udev/rules.d/60-openrgb.rules
+	vinstall usr/lib/udev/rules.d/60-openrgb.rules 644 usr/lib/udev/rules.d
 
 	vlicense ${FILESDIR}/LICENSE
 }
