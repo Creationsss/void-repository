@@ -25,11 +25,14 @@ do_extract() {
 
 do_install() {
 	vmkdir usr/lib/labymodlauncher
-	vcopy "usr/lib/labymodlauncher/*" usr/lib/labymodlauncher
+	cp -a "opt/Laby Launcher/." ${DESTDIR}/usr/lib/labymodlauncher/
 	chmod 755 ${DESTDIR}/usr/lib/labymodlauncher/labymodlauncher
 	chmod 755 ${DESTDIR}/usr/lib/labymodlauncher/chrome_crashpad_handler
 	vbin ${FILESDIR}/labymod-launcher.sh labymod-launcher
 	vinstall ${FILESDIR}/labymod-launcher.desktop 644 usr/share/applications
-	vinstall usr/share/pixmaps/labymodlauncher.png 644 usr/share/pixmaps
+	vinstall usr/share/icons/hicolor/512x512/apps/labymodlauncher.png 644 \
+		usr/share/icons/hicolor/512x512/apps
+	vinstall usr/share/icons/hicolor/512x512/apps/labymodlauncher.png 644 \
+		usr/share/pixmaps
 	find ${DESTDIR} -type f -perm -0002 -exec chmod o-w {} +
 }
