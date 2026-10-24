@@ -1,6 +1,6 @@
 # Template file for 'gram'
 pkgname=gram
-version=3.3.0
+version=3.4.1
 revision=1
 archs="x86_64"
 depends="vulkan-loader wayland fontconfig hicolor-icon-theme desktop-file-utils"
@@ -10,7 +10,7 @@ maintainer="creations <creations@creations.works>"
 license="GPL-3.0-or-later, AGPL-3.0-or-later, Apache-2.0"
 homepage="https://codeberg.org/GramEditor/gram"
 distfiles="https://codeberg.org/GramEditor/gram/releases/download/${version}/gram-linux-x86_64-${version}.tar.gz"
-checksum=9b970939f45866bef819acddf9cf6744e3ad7de17037a3feeab1b0501ea9592e
+checksum=6a92eabb61ced515eed491e41cfd67ec7b9117cc69c082c588c454954cf3e143
 wrksrc="gram.app"
 nostrip=yes
 allow_unknown_shlibs=yes
@@ -23,7 +23,7 @@ do_install() {
 
 	vbin ${FILESDIR}/gram.sh gram
 
-	vinstall share/applications/gram.desktop 644 usr/share/applications app.liten.Gram.desktop
+	vinstall share/applications/app.liten.Gram.desktop 644 usr/share/applications
 	vinstall share/icons/hicolor/scalable/apps/app.liten.Gram.svg 644 usr/share/icons/hicolor/scalable/apps
 	vinstall share/icons/hicolor/symbolic/apps/app.liten.Gram-symbolic.svg 644 usr/share/icons/hicolor/symbolic/apps
 
