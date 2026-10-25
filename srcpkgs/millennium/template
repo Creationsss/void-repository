@@ -1,0 +1,32 @@
+# Template file for 'millennium'
+pkgname=millennium
+version=3.6.2
+revision=1
+archs="x86_64"
+create_wrksrc=yes
+depends="steam glibc-32bit libgcc-32bit libstdc++-32bit libssl3-32bit libcrypto3-32bit"
+short_desc="Framework for Steam client themes and plugins"
+_category=Gaming
+maintainer="creations <creations@creations.works>"
+license="MIT"
+homepage="https://github.com/SteamClientHomebrew/Millennium"
+distfiles="https://github.com/SteamClientHomebrew/Millennium/releases/download/v${version}/millennium-v${version}-linux-x86_64.tar.gz
+ https://raw.githubusercontent.com/SteamClientHomebrew/Millennium/v${version}/LICENSE.md"
+checksum="95bda40184dd6437da1668060ec5961c762f3c1e59923f53380e43d4e720f359
+ f01d1b8bce439ee29491817247a38611c41f7d1de4360b5577d4498d103fbf8b"
+skip_extraction="LICENSE.md"
+nostrip=yes
+allow_unknown_shlibs=yes
+skiprdeps="/usr/lib/millennium/libmillennium_x86.so
+ /usr/lib/millennium/libmillennium_bootstrap_x86.so
+ /usr/lib/millennium/libmillennium_luavm_x86"
+
+do_install() {
+	vmkdir usr/lib/millennium
+	vcopy "usr/lib/millennium/*" usr/lib/millennium
+	chmod 755 ${DESTDIR}/usr/lib/millennium/libmillennium_pvs64
+	chmod 755 ${DESTDIR}/usr/lib/millennium/libmillennium_luavm_x86
+
+	vbin ${FILESDIR}/millennium-setup.sh millennium-setup
+	vlicense ${XBPS_SRCDISTDIR}/${pkgname}-${version}/LICENSE.md
+}
