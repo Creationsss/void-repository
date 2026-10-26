@@ -1,6 +1,6 @@
 # Template file for 'labymod-launcher'
 pkgname=labymod-launcher
-version=3.1.16
+version=3.1.17
 revision=1
 archs="x86_64"
 create_wrksrc=yes
@@ -13,7 +13,7 @@ maintainer="creations <creations@creations.works>"
 license="custom:Proprietary"
 homepage="https://www.labymod.net"
 distfiles="https://releases.r2.labymod.net/launcher/linux/x64/labymodlauncher_latest_amd64.deb>labymodlauncher_${version}_amd64.deb"
-checksum=16cd46fd23a74dd14a44ed0e89d144c0e9ab5cd585b500d0d2bf2a0cc55f9f5d
+checksum=c4484afeefe929badb3b4c31d0451e909aac8d896141561aaf759db8b32382c2
 nostrip=yes
 _vcheck_api="labymod"
 allow_unknown_shlibs=yes
