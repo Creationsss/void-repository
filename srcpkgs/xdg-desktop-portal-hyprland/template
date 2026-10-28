@@ -1,14 +1,13 @@
 # Template file for 'xdg-desktop-portal-hyprland'
 pkgname=xdg-desktop-portal-hyprland
-version=1.4.1
-revision=2
+version=1.5.0
+revision=1
 build_style=cmake
 configure_args="-DCMAKE_INSTALL_LIBEXECDIR:PATH=/usr/libexec"
-hostmakedepends="git hyprwayland-scanner pkgconf
- qt6-base-devel scdoc wayland-protocols"
-makedepends="elogind-devel hyprland-protocols hyprlang hyprutils
- hyprwayland-scanner libgbm-devel libdrm-devel pipewire-devel
- qt6-base-devel qt6-wayland-devel sdbus-c++-devel wayland-devel"
+hostmakedepends="git hyprwayland-scanner pkgconf scdoc wayland-protocols"
+makedepends="elogind-devel hyprland-protocols hyprlang hyprtoolkit hyprutils
+ hyprwayland-scanner libgbm-devel libdrm-devel libuuid-devel pipewire-devel
+ sdbus-c++-devel wayland-devel"
 depends="xdg-desktop-portal"
 short_desc="Backend of xdg-desktop-portal for Hyprland"
 _category=Hyprland
@@ -17,7 +16,7 @@ maintainer="creations <creations@creations.works>"
 license="BSD-3-Clause"
 homepage="https://github.com/hyprwm/xdg-desktop-portal-hyprland"
 distfiles="${homepage}/archive/refs/tags/v${version}.tar.gz"
-checksum=3652c14f63a9666acea2c841e196782dbc0f74ea5b4783622dd04a32f08b709f
+checksum=8f9eddad706b0bbca2dc24f9894e07969ec5aed163249d6eac3932cfaf38e6a9
 
 post_install() {
 	vlicense LICENSE
