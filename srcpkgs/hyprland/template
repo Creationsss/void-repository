@@ -10,10 +10,10 @@ configure_args="-DNO_SYSTEMD:BOOL=true -Dglaze_DIR:PATH=/usr/share/glaze
  -DCMAKE_MODULE_LINKER_FLAGS=-Wl,--exclude-libs,liblua5.5.a"
 hostmakedepends="cmake cpio glslang hyprwayland-scanner hyprwire jq pkgconf python3 xxd libei-devel readline-devel"
 makedepends="aquamarine cairo-devel glaze glslang-devel hwids hyprcursor
- hyprgraphics hyprlang hyprutils hyprwire lcms2-devel libdisplay-info-devel libdrm-devel
- libgbm-devel libglvnd-devel libinput-devel libliftoff-devel libseat-devel
+ hyprgraphics hyprland-protocols hyprlang hyprutils hyprwire lcms2-devel libdisplay-info-devel libdrm-devel
+ libgbm-devel libglvnd-devel libcanberra-devel libinput-devel libliftoff-devel libseat-devel
  libxcb-devel libXcursor-devel libxkbcommon-devel lua55-devel muparser-devel pango-devel
- re2-devel SPIRV-Tools-devel tomlplusplus-devel wayland-devel wayland-protocols
+ re2-devel sdbus-c++-devel SPIRV-Tools-devel tomlplusplus-devel wayland-devel wayland-protocols
  xcb-util-errors-devel xcb-util-renderutil-devel xcb-util-wm-devel xorg-server-xwayland"
 short_desc="Dynamic tiling Wayland compositor that doesn't sacrifice on its looks"
 _category=Hyprland
