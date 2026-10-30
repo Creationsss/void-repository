@@ -1,6 +1,6 @@
 # Template file for 'r2modman'
 pkgname=r2modman
-version=3.2.20
+version=3.2.21
 revision=1
 archs="x86_64"
 create_wrksrc=yes
@@ -11,7 +11,7 @@ maintainer="creations <creations@creations.works>"
 license="MIT"
 homepage="https://r2modman.net"
 distfiles="https://github.com/ebkr/r2modmanPlus/releases/download/v${version}/r2modman-${version}.AppImage"
-checksum=a349eaf091b37243204d0e05ee59b4bf3cd42857eb2ca452d03b09c86b516a92
+checksum=ff2562c9503c48417d2ca3358967030dbf3e9f318ebe1c5547191457e09d31b6
 nostrip=yes
 allow_unknown_shlibs=yes
 skip_extraction="r2modman-${version}.AppImage"
