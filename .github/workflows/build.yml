@@ -20,6 +20,7 @@ jobs:
         outputs:
             clusters: ${{ steps.clusters.outputs.clusters }}
             build_only: ${{ steps.filter.outputs.build_only }}
+            removed: ${{ steps.removed.outputs.removed }}
         steps:
             - uses: actions/checkout@v5
               with:
@@ -59,6 +60,23 @@ jobs:
                     [ -n "$missing" ] && { echo "::error::rebuild group '$g' partially bumped; missing revision bump on:$missing (run: sh .github/scripts/revbump-group.sh $g, or add [skip group-check])"; rc=1; }
                   done
                   exit $rc
+
+            - name: Detect removed packages
+              id: removed
+              if: ${{ github.event_name == 'push' }}
+              env:
+                  BEFORE: ${{ github.event.before }}
+              run: |
+                  if [ -n "$BEFORE" ] && [ "$BEFORE" != "0000000000000000000000000000000000000000" ] && git cat-file -e "$BEFORE" 2>/dev/null; then
+                    range="${BEFORE}..HEAD"
+                  else
+                    range="HEAD~1..HEAD"
+                  fi
+                  removed="$(git diff --diff-filter=D --name-only "$range" -- srcpkgs \
+                    | cut -d/ -f2 | sort -u \
+                    | while read -r p; do [ -e "srcpkgs/$p" ] || echo "$p"; done | xargs)"
+                  echo "removed=$removed" >> "$GITHUB_OUTPUT"
+                  echo ":: Removed packages: ${removed:-none}"
 
             - name: Detect build filter
               id: filter
@@ -179,6 +197,7 @@ jobs:
 
     build:
         needs: discover
+        if: ${{ needs.discover.outputs.clusters != '[]' }}
         runs-on: ubuntu-latest
         container:
             image: ghcr.io/void-linux/void-glibc-full:latest
@@ -271,8 +290,8 @@ jobs:
                   retention-days: 7
 
     assemble:
-        needs: build
-        if: ${{ github.event_name == 'push' && success() }}
+        needs: [discover, build]
+        if: ${{ github.event_name == 'push' && !cancelled() && (needs.build.result == 'success' || (needs.build.result == 'skipped' && needs.discover.result == 'success' && needs.discover.outputs.removed != '')) }}
         runs-on: ubuntu-latest
         container:
             image: ghcr.io/void-linux/void-glibc-full:latest
@@ -286,16 +305,24 @@ jobs:
               run: mkdir -p /void-packages/hostdir/binpkgs
 
             - name: Restore previous binpkg cache
+              id: binpkg-cache
               uses: actions/cache/restore@v6
               with:
                   path: /void-packages/hostdir/binpkgs
                   key: xbps-pkgs-v3-${{ github.run_id }}
                   restore-keys: xbps-pkgs-v3-
 
+            - name: Refuse removal-only publish without package cache
+              if: ${{ needs.build.result == 'skipped' && steps.binpkg-cache.outputs.cache-matched-key == '' }}
+              run: |
+                  echo "::error::No binpkg cache restored; publishing now would prune the whole repo"
+                  exit 1
+
             - name: Clean stale repodata
               run: rm -f /void-packages/hostdir/binpkgs/*-repodata* /void-packages/hostdir/binpkgs/*-stagedata* /void-packages/hostdir/binpkgs/*.plist
 
             - name: Download cluster artifacts
+              if: ${{ needs.build.result == 'success' }}
               uses: actions/download-artifact@v8
               with:
                   path: /tmp/cluster-artifacts
