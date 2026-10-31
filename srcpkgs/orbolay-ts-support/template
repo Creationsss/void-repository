@@ -1,0 +1,32 @@
+# Template file for 'orbolay-ts-support'
+pkgname=orbolay-ts-support
+version=4.2.0
+revision=1
+_commit=64888cace2328323338190196682661c13771e92
+_skia_tag=0.104.0
+_skia_key=746613b43b596b9d2114-x86_64-unknown-linux-gnu-egl-ganesh-gl-jpegd-jpege-svg-textlayout-vulkan-wayland-webpd-webpe-x11
+archs="x86_64"
+build_style=cargo
+hostmakedepends="clang pkg-config"
+makedepends="fontconfig-devel freetype-devel gtk+3-devel libX11-devel libXtst-devel libevdev-devel
+ libglvnd-devel libxcb-devel libxkbcommon-devel wayland-devel"
+depends="libX11 libXtst libstdc++ fontconfig freetype libglvnd libxcb gtk+3"
+short_desc="Quick, small, native Discord overlay alternative - with TeamSpeak support"
+_category=Discord
+_no_vcheck=yes
+maintainer="creations <creations@creations.works>"
+license="GPL-3.0-or-later"
+homepage="https://github.com/Creationsss/Orbolay"
+distfiles="https://github.com/Creationsss/Orbolay/archive/${_commit}.tar.gz>orbolay-${_commit}.tar.gz
+ https://github.com/marc2332/rust-skia/releases/download/${_skia_tag}/skia-binaries-${_skia_key}.tar.gz"
+checksum="8ab5b224f7f45f0a3e70570cc5279b25992187a035616211fe4930b85d881b54
+ dc12448643e1a87e903a5a0bf142f772e78e4b783fe7aabc5e79fdb050f7c03c"
+skip_extraction="skia-binaries-${_skia_key}.tar.gz"
+provides="orbolay-${version}_${revision}"
+conflicts="orbolay>=0"
+
+export SKIA_BINARIES_URL="file://${XBPS_SRCDISTDIR}/${pkgname}-${version}/skia-binaries-${_skia_key}.tar.gz"
+
+post_install() {
+	vinstall ${FILESDIR}/orbolay.desktop 644 usr/share/applications
+}
