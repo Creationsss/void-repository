@@ -6,7 +6,8 @@ build_style=cmake
 CXXFLAGS="-I/usr/include/pixman-1 -I/usr/include/libdrm"
 hostmakedepends="ninja pkgconf"
 makedepends="aquamarine cairo-devel hyprgraphics hyprlang
- hyprtoolkit hyprutils libdrm-devel pixman-devel libxkbcommon-devel"
+ hyprtoolkit hyprutils libdrm-devel pixman-devel libxkbcommon-devel
+ libglvnd-devel pango-devel"
 depends="hyprland-qt-support"
 short_desc="Hyprland GUI utilities (successor to hyprland-qtutils)"
 _category=Hyprland
