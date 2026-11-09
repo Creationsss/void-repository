@@ -1,7 +1,7 @@
 # Template file for 'hyprland'
 pkgname=hyprland
-version=0.57.1
-revision=3
+version=0.57.2
+revision=1
 archs="x86_64"
 build_style=cmake
 configure_args="-DNO_SYSTEMD:BOOL=true -Dglaze_DIR:PATH=/usr/share/glaze
@@ -23,7 +23,7 @@ license="BSD-3-Clause"
 homepage="https://hyprland.org/"
 changelog="https://github.com/hyprwm/Hyprland/releases"
 distfiles="https://github.com/hyprwm/Hyprland/releases/download/v${version}/source-v${version}.tar.gz"
-checksum=24e7428f83115e58e5fc81f100f6b73691dcaaf7a503087391e44327a71c43ab
+checksum=34dbec0738ab88c8228caf89385662688ab1601ea58fbe5c60a6b6ab383db46d
 make_check=no # cant run in sandbox
 
 pre_configure() {
