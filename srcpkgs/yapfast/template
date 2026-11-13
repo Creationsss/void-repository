@@ -1,0 +1,26 @@
+# Template file for 'yapfast'
+pkgname=yapfast
+version=0.3.0
+revision=1
+archs="x86_64"
+create_wrksrc=yes
+depends="alsa-lib fontconfig glib hicolor-icon-theme libglvnd libpulseaudio
+ libX11 libxcb libXcursor libXi libxkbcommon libxkbcommon-x11 wayland"
+short_desc="Native Discord client that stays light on memory"
+_category=Discord
+maintainer="creations <creations@creations.works>"
+license="GPL-3.0-or-later"
+homepage="https://github.com/yapfast/yapfast"
+distfiles="https://github.com/yapfast/yapfast/releases/download/v${version}/yapfast-${version}-1-x86_64.pkg.tar.zst"
+checksum=09e81e25160a2625d5a23c40b3d94bc7126f8dbb8f0714b432bb0c62c3a73914
+nostrip=yes
+
+do_install() {
+	vbin usr/bin/yapfast
+	vinstall usr/share/applications/io.github.yapfast.Yapfast.desktop 644 usr/share/applications
+	vinstall usr/share/icons/hicolor/scalable/apps/io.github.yapfast.Yapfast.svg 644 \
+		usr/share/icons/hicolor/scalable/apps
+	vinstall usr/share/metainfo/io.github.yapfast.Yapfast.metainfo.xml 644 usr/share/metainfo
+	vmkdir usr/share/licenses/${pkgname}
+	cp -a usr/share/doc/yapfast/. ${DESTDIR}/usr/share/licenses/${pkgname}/
+}
