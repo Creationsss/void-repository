@@ -1,6 +1,6 @@
 # Template file for 'millennium'
 pkgname=millennium
-version=3.6.2
+version=3.6.3
 revision=1
 archs="x86_64"
 create_wrksrc=yes
@@ -12,7 +12,7 @@ license="MIT"
 homepage="https://github.com/SteamClientHomebrew/Millennium"
 distfiles="https://github.com/SteamClientHomebrew/Millennium/releases/download/v${version}/millennium-v${version}-linux-x86_64.tar.gz
  https://raw.githubusercontent.com/SteamClientHomebrew/Millennium/v${version}/LICENSE.md"
-checksum="95bda40184dd6437da1668060ec5961c762f3c1e59923f53380e43d4e720f359
+checksum="9d9a5f8448cf92f4634d6ea49b5263409157cccf5b68a8ff10e962c8d7e52c28
  f01d1b8bce439ee29491817247a38611c41f7d1de4360b5577d4498d103fbf8b"
 skip_extraction="LICENSE.md"
 nostrip=yes
