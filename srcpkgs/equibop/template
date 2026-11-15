@@ -1,6 +1,6 @@
 # Template file for 'equibop'
 pkgname=equibop
-version=3.3.2
+version=3.3.4
 revision=1
 _electronver=35
 hostmakedepends="gcc nodejs nodejs-devel python3 pkg-config libglib-devel"
@@ -11,8 +11,8 @@ maintainer="creations <creations@creations.works>"
 license="GPL-3.0-or-later"
 homepage="https://github.com/Equicord/Equibop"
 distfiles="https://github.com/Equicord/Equibop/archive/refs/tags/v${version}.tar.gz"
-checksum=81a5967f696f4ccf218f8b625623f54d043c676024cdcc29a574431d89922d3d
-_githash=a573f852ad4380faf84978a1983d3bbd93889698
+checksum=c557e280b461350841efc660cff14047172615797585b0249634b1a417ebb6fc
+_githash=8e2746f4a422e8c3da5741c603bb0a013b992e7a
 wrksrc="Equibop-${version}"
 nostrip=yes
 
@@ -33,7 +33,6 @@ do_install() {
 	vmkdir usr/lib/equibop
 	vinstall dist/linux-unpacked/resources/app.asar 644 usr/lib/equibop
 	vinstall dist/linux-unpacked/resources/app-update.yml 644 usr/lib/equibop
-	vcopy dist/linux-unpacked/resources/arrpc usr/lib/equibop
 
 	vbin ${FILESDIR}/equibop.sh equibop
 
