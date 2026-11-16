@@ -1,6 +1,6 @@
 # Template file for 'vicinae'
 pkgname=vicinae
-version=0.30.0
+version=0.30.1
 revision=1
 build_style=cmake
 configure_args="-DVICINAE_GIT_TAG=v${version} -DVICINAE_GIT_COMMIT_HASH=402695c
@@ -19,7 +19,7 @@ homepage="https://github.com/vicinaehq/vicinae"
 _jkqt_commit=d9b6f18eac22f5e9959a5415d7ba0d8780f24585
 distfiles="https://github.com/vicinaehq/vicinae/archive/refs/tags/v${version}.tar.gz
  https://github.com/jkriege2/JKQtPlotter/archive/${_jkqt_commit}.tar.gz>jkqtplotter-${_jkqt_commit}.tar.gz"
-checksum="f6ddf9b9ecda6ca5b5a1a655e55c30b9b2352d399985ba9881e8309ef2ac2a99
+checksum="cbbf86706e36b038ebfd69fda68fa3e0081d520e44cf8663ba05cc122e51ab8a
  e64716932c2e56e97041bcb4dbabe7c9045ea7d60addc4edb38eed43425286e8"
 skip_extraction="jkqtplotter-${_jkqt_commit}.tar.gz"
 
