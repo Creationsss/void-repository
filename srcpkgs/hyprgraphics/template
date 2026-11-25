@@ -1,7 +1,7 @@
 # Template file for 'hyprgraphics'
 pkgname=hyprgraphics
-version=0.6.0
-revision=2
+version=0.7.0
+revision=1
 archs="x86_64"
 build_style=cmake
 configure_args="--no-warn-unused-cli"
@@ -16,7 +16,7 @@ maintainer="creations <creations@creations.works>"
 license="BSD-3-Clause"
 homepage="https://github.com/hyprwm/hyprgraphics"
 distfiles="https://github.com/hyprwm/hyprgraphics/archive/refs/tags/v${version}.tar.gz"
-checksum=27e9e19ff59ba75a2963d72c3dcb5c0840b266b90d7fca6d5df7cac105419b08
+checksum=fea19225b0bf46912e8a78f3ab35aa1680f5517c6c207b997ac4b4f088de1a02
 make_check=no # cant run in sandbox
 
 post_install() {

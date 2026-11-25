@@ -1,6 +1,6 @@
 # Template file for 'bruno'
 pkgname=bruno
-version=4.3.0
+version=4.4.0
 revision=1
 archs="x86_64"
 create_wrksrc=yes
@@ -11,7 +11,7 @@ maintainer="creations <creations@creations.works>"
 license="MIT"
 homepage="https://www.usebruno.com"
 distfiles="https://github.com/usebruno/bruno/releases/download/v${version}/bruno_${version}_amd64_linux.deb"
-checksum=45117e3cc3c221801d10c8984c8e796f11bdf16d28e3a51b35e976603d3c3a02
+checksum=5d9e05b4fd2c4ecfbf24fc4280622d4c3a17db22c5ab709eea8ab13db46cf2a0
 nostrip=yes
 allow_unknown_shlibs=yes
 
@@ -32,4 +32,5 @@ do_install() {
 			usr/share/icons/hicolor/${size}x${size}/apps
 	done
 	vlicense ${FILESDIR}/LICENSE
+	find ${DESTDIR} -type f -perm -0002 -exec chmod o-w {} +
 }
