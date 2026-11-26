@@ -1,6 +1,6 @@
 # Template file for 'wootility'
 pkgname=wootility
-version=5.4.2
+version=5.4.3
 revision=1
 archs="x86_64"
 create_wrksrc=yes
@@ -11,7 +11,7 @@ maintainer="creations <creations@creations.works>"
 license="custom:Proprietary"
 homepage="https://wooting.io/wootility"
 distfiles="https://api.wooting.io/public/wootility/download?os=linux&version=${version}>Wootility-${version}.AppImage"
-checksum=2e0bc9f21684d414ea44f7e8fb9a15c1c0d40d54afe8e83e79027198324d7368
+checksum=7a1d80cb882f7318832422789cb5dfe1b6998398b233e1fe0fb309fa20d359a4
 _vcheck_api="wooting"
 nostrip=yes
 allow_unknown_shlibs=yes
@@ -47,4 +47,5 @@ do_install() {
 	vinstall usr/share/icons/hicolor/128x128/apps/wootility.png 644 usr/share/pixmaps wootility.png
 	vinstall ${FILESDIR}/70-wooting.rules 644 usr/lib/udev/rules.d
 	vlicense LICENSE.electron.txt
+	find ${DESTDIR} -type f -perm -0002 -exec chmod o-w {} +
 }

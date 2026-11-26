@@ -1,17 +1,17 @@
 # Template file for 'protonplus'
 pkgname=protonplus
-version=0.6.8
+version=0.6.9
 revision=1
 build_style=meson
 hostmakedepends="meson pkg-config gettext vala glib-devel desktop-file-utils"
 makedepends="gtk4-devel libadwaita-devel json-glib-devel libsoup3-devel libgee08-devel libarchive-devel
- SDL3-devel libnotify-devel cairo-devel AppStream-devel"
-depends="gtk4 libadwaita libgee08 json-glib libsoup3 libarchive SDL3 libnotify"
+ SDL3-devel libnotify-devel cairo-devel AppStream-devel sqlite-devel libyaml-devel"
+depends="gtk4 libadwaita libgee08 json-glib libsoup3 libarchive SDL3 libnotify sqlite libyaml"
 short_desc="Modern compatibility tools manager for Linux gaming"
 _category=Gaming
 maintainer="creations <creations@creations.works>"
 license="GPL-3.0-or-later"
 homepage="https://github.com/Vysp3r/protonplus"
 distfiles="https://github.com/Vysp3r/protonplus/archive/refs/tags/v${version}.tar.gz"
-checksum=9635706b4649032add033fcedf6db8dcbafe20c63789523c10a4764cb08fd2c7
+checksum=d259e6f5ee04d20bf2adb80a0d1207a9b5dd9b77a1f7bbf8c0042535942f6583
 wrksrc="ProtonPlus-${version}"
